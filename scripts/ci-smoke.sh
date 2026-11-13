@@ -59,6 +59,15 @@ for u in "${URLS[@]}"; do
   [ "$code" = 200 ] && ok=$((ok + 1))
 done
 
+# /markdown pipeline: Readability (in-page) + turndown (proxy-side).
+# 200 = article extracted; 422 = no article — both prove the pipeline works.
+echo "== markdown pipeline (/markdown on first URL)"
+mcode=$(curl -s -o /dev/null -w '%{http_code}' -m 120 -X POST "http://127.0.0.1:${PORT}/markdown" \
+  -H "Authorization: Bearer ${TOKEN}" -H 'content-type: application/json' \
+  -d "{\"url\":\"${URLS[0]}\"}")
+echo "   ${URLS[0]} → ${mcode} (expect 200 or 422)"
+[ "$mcode" = 200 ] || [ "$mcode" = 422 ] || { echo "FAIL: markdown pipeline broken"; docker logs "$NAME" 2>&1 | tail -20; exit 1; }
+
 echo "== ${ok}/${#URLS[@]} ok (need ${NEED})"
 if [ "$ok" -lt "$NEED" ]; then
   echo "FAIL"; docker logs "$NAME" 2>&1 | tail -20
