@@ -76,3 +76,13 @@ class Surfbird:
     def evaluate(self, url: str, script: str):
         data, _ = self._post("evaluate", {"url": url, "script": script})
         return json.loads(data).get("result")
+
+    def batch(self, action: str, urls: list[str], timeout: int | None = None) -> list[dict]:
+        """ONE POST /batch → [{url, ok, status, data|error}].
+        Per-item failures are entries, not exceptions. Max MAX_BATCH_URLS (20) urls."""
+        old, self.timeout = self.timeout, timeout or self.timeout * len(urls)
+        try:
+            data, _ = self._post("batch", {"action": action, "urls": urls})
+            return json.loads(data)
+        finally:
+            self.timeout = old

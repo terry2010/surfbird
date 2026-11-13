@@ -16,12 +16,16 @@ Zero dependencies — stdlib only.
 | `surfbird.py` | Importable client class (`Surfbird`) — markdown/content/screenshot/pdf/evaluate/health |
 | `article_to_markdown.py` | `python article_to_markdown.py <url> out.md` |
 | `rss_to_markdown.py` | `python rss_to_markdown.py <feed-url> [N] digest.md` — feed → per-article markdown → combined digest (daily-news-report pattern) |
+| `batch_markdown.py` | `python batch_markdown.py [urls.txt] [digest.md]` — ONE `POST /batch` call for ≤20 urls, per-item failures don't abort |
 
 ```bash
 cd examples/python
 python article_to_markdown.py https://zhuikan.com/repos/terry2010__surfbird out.md
 python rss_to_markdown.py https://www.ruanyifeng.com/blog/atom.xml 5 digest.md
+python batch_markdown.py urls.txt digest.md   # server-side batch via /batch
 ```
+
+**`/batch` vs looping yourself:** `POST /batch` runs the whole list in one request, server-side sequential, and returns `[{url, ok, status, data|error}]` — partial failures come back as entries, not aborts. For lists > `MAX_BATCH_URLS` (20) or streaming progress, a client loop like `rss_to_markdown.py` / `batch-markdown.sh` is still the right tool.
 
 ## Bash (`examples/bash/`)
 
@@ -31,7 +35,7 @@ Needs `curl` + `jq`.
 |---|---|
 | `markdown.sh` | `./markdown.sh <url> [out.md]` — article → markdown |
 | `screenshot.sh` | `./screenshot.sh <url> [out.png] [full]` |
-| `batch-markdown.sh` | `cat urls.txt \| ./batch-markdown.sh ./out` — sequential batch (respects the server concurrency cap) |
+| `batch-markdown.sh` | `cat urls.txt \| ./batch-markdown.sh ./out` — client-side loop; for ≤20 urls prefer `/batch` (see `batch_markdown.py`) |
 
 ## Error codes worth handling
 

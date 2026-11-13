@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
-# Batch: one URL per line from stdin (or a file arg) → outdir/<slug>.md
+# Batch (client-side loop): one URL per line from stdin (or a file arg) → outdir/<slug>.md
 # Honors the proxy's concurrency cap — runs strictly sequentially.
+# For ≤MAX_BATCH_URLS (20) urls prefer ONE server-side call:
+#   curl -X POST $BASE/batch -d '{"action":"markdown","urls":[...]}'
+# See ../python/batch_markdown.py.
 #   cat urls.txt | SURFBIRD_URL=... SURFBIRD_TOKEN=... ./batch-markdown.sh ./out
 set -euo pipefail
 
