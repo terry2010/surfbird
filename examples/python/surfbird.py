@@ -3,7 +3,7 @@
 Usage:
     from surfbird import Surfbird
     sb = Surfbird("http://vps:8080", token="...")
-    article = sb.markdown("https://example.com/post")
+    article = sb.markdown("https://zhuikan.com/repos/terry2010__surfbird")
 """
 from __future__ import annotations
 

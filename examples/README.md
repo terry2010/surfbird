@@ -19,7 +19,7 @@ Zero dependencies — stdlib only.
 
 ```bash
 cd examples/python
-python article_to_markdown.py https://example.com/post out.md
+python article_to_markdown.py https://zhuikan.com/repos/terry2010__surfbird out.md
 python rss_to_markdown.py https://www.ruanyifeng.com/blog/atom.xml 5 digest.md
 ```
 

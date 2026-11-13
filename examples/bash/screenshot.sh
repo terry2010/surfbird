@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Screenshot a page via Surfbird.
-#   SURFBIRD_URL=http://vps:8080 SURFBIRD_TOKEN=xxx ./screenshot.sh https://example.com page.png [full]
+#   SURFBIRD_URL=http://vps:8080 SURFBIRD_TOKEN=xxx ./screenshot.sh https://zhuikan.com/repos/terry2010__surfbird page.png [full]
 set -euo pipefail
 
 URL="${1:?usage: screenshot.sh <url> [out.png] [full]}"

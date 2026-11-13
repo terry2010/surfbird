@@ -10,7 +10,7 @@ IMAGE="${1:?usage: ci-smoke.sh <image> [url ...]}"
 shift
 URLS=("$@")
 if [ "${#URLS[@]}" -eq 0 ]; then
-  URLS=("https://www.google.com" "https://www.zhuikan.com" "https://www.cloudflare.com")
+  URLS=("https://www.google.com" "https://zhuikan.com/repos/terry2010__surfbird" "https://www.cloudflare.com")
 fi
 NEED=$(( ${#URLS[@]} - 1 ))
 [ "$NEED" -lt 1 ] && NEED=1

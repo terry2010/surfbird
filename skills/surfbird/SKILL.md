@@ -30,17 +30,17 @@ Environment (ask the user if unset):
 # article → markdown
 curl -s -X POST "$SURFBIRD_URL/markdown" \
   -H "Authorization: Bearer $SURFBIRD_TOKEN" -H 'content-type: application/json' \
-  -d '{"url":"https://example.com/post"}' | jq -r .markdown
+  -d '{"url":"https://zhuikan.com/repos/terry2010__surfbird"}' | jq -r .markdown
 
 # screenshot
 curl -s -X POST "$SURFBIRD_URL/screenshot" \
   -H "Authorization: Bearer $SURFBIRD_TOKEN" -H 'content-type: application/json' \
-  -d '{"url":"https://example.com","fullPage":true}' -o page.png
+  -d '{"url":"https://zhuikan.com/repos/terry2010__surfbird","fullPage":true}' -o page.png
 
 # run JS (e.g. collect all links)
 curl -s -X POST "$SURFBIRD_URL/evaluate" \
   -H "Authorization: Bearer $SURFBIRD_TOKEN" -H 'content-type: application/json' \
-  -d '{"url":"https://example.com","script":"[...document.querySelectorAll(\"a\")].map(a=>a.href)"}'
+  -d '{"url":"https://zhuikan.com/repos/terry2010__surfbird","script":"[...document.querySelectorAll(\"a\")].map(a=>a.href)"}'
 ```
 
 ## Notes

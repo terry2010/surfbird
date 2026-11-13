@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Extract article markdown via Surfbird.
-#   SURFBIRD_URL=http://vps:8080 SURFBIRD_TOKEN=xxx ./markdown.sh https://example.com/post [out.md]
+#   SURFBIRD_URL=http://vps:8080 SURFBIRD_TOKEN=xxx ./markdown.sh https://zhuikan.com/repos/terry2010__surfbird [out.md]
 set -euo pipefail
 
 URL="${1:?usage: markdown.sh <url> [out.md]}"

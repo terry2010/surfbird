@@ -50,7 +50,7 @@ echo "== logs =="
 docker logs surfbird-test --tail 15
 echo "== DONE. try: =="
 if [ "$MODE" = "auth" ]; then
-  echo "curl -H 'Authorization: Bearer \$TOKEN' -d '{\"url\":\"https://example.com\"}' http://127.0.0.1:$PORT/screenshot -o /tmp/page.png"
+  echo "curl -H 'Authorization: Bearer \$TOKEN' -d '{\"url\":\"https://zhuikan.com/repos/terry2010__surfbird\"}' http://127.0.0.1:$PORT/screenshot -o /tmp/page.png"
 else
   echo "curl http://127.0.0.1:$EPORT/json/version"
 fi

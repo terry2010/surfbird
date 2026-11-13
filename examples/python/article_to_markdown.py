@@ -2,7 +2,7 @@
 """Fetch one article URL → clean markdown file.
 
     SURFBIRD_URL=http://vps:8080 SURFBIRD_TOKEN=xxx \
-      python article_to_markdown.py https://example.com/post out.md
+      python article_to_markdown.py https://zhuikan.com/repos/terry2010__surfbird out.md
 """
 import os
 import sys

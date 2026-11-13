@@ -47,11 +47,11 @@ puppeteer.connect({
 
 ```bash
 curl -H "Authorization: Bearer $TOKEN" \
-     -d '{"url":"https://example.com","fullPage":true}' \
+     -d '{"url":"https://zhuikan.com/repos/terry2010__surfbird","fullPage":true}' \
      http://<host>:8080/screenshot -o page.png
 
 curl -H "Authorization: Bearer $TOKEN" \
-     -d '{"url":"https://example.com"}' \
+     -d '{"url":"https://zhuikan.com/repos/terry2010__surfbird"}' \
      http://<host>:8080/markdown | jq -r .markdown
 ```
 
