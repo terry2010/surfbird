@@ -1,0 +1,14 @@
+{
+  "name": "surfbird-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Thin MCP wrapper exposing Surfbird REST actions as MCP tools",
+  "bin": {
+    "surfbird-mcp": "./server.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.0",
+    "zod": "^3.25.0"
+  }
+}

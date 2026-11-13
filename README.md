@@ -58,6 +58,33 @@ curl -H "Authorization: Bearer $TOKEN" \
 Endpoints: `POST /screenshot | /pdf | /content | /markdown | /evaluate`, `GET /health`.
 All other paths transparently proxy to the engine (landing page, `/json/*`, `/rbi/*`).
 
+## MCP (Model Context Protocol)
+
+Two ways to plug Surfbird into an MCP-capable agent (Claude Code, Cursor, Windsurf, …):
+
+**A. `surfbird-mcp` — thin wrapper (recommended).** Exposes our REST actions as MCP tools — including `surf_markdown`, which stock browser MCPs don't have:
+
+```json
+{
+  "mcpServers": {
+    "surfbird": {
+      "command": "npx",
+      "args": ["-y", "github:terry2010/surfbird", "surfbird-mcp"],
+      "env": {
+        "SURFBIRD_URL": "http://<host>:8080",
+        "SURFBIRD_TOKEN": "<token>"
+      }
+    }
+  }
+}
+```
+
+Tools: `surf_markdown` `surf_content` `surf_screenshot` `surf_pdf` `surf_evaluate` `surf_health`.
+
+**B. `chrome-devtools-mcp` — full CDP surface.** Points straight at the proxied WebSocket (`/devtools/browser` passes through with Bearer auth) — more tools, more moving parts. See upstream docs; if your client can't send custom WS headers, run a `raw` image on a private network instead.
+
+**No MCP at all?** The REST layer is agent-friendly on its own — [`skills/surfbird/SKILL.md`](skills/surfbird/SKILL.md) is a drop-in skill that teaches any agent to drive it with `curl`.
+
 ## Env
 
 | Var | Default | Meaning |
