@@ -33,9 +33,14 @@ Needs `curl` + `jq`.
 
 | Script | What it does |
 |---|---|
-| `markdown.sh` | `./markdown.sh <url> [out.md]` — article → markdown |
-| `screenshot.sh` | `./screenshot.sh <url> [out.png] [full]` |
+| `markdown.sh` | `./markdown.sh [url] [out.md]` — article → markdown |
+| `screenshot.sh` | `./screenshot.sh [url] [out.png] [full]` — PNG screenshot |
+| `content.sh` | `./content.sh [url] [out.html]` — rendered DOM `{title,url,html}` |
+| `pdf.sh` | `./pdf.sh [url] [out.pdf] [landscape]` — page → PDF |
+| `evaluate.sh` | `./evaluate.sh [url] "document.title"` — JS in page context → `{result}` |
 | `batch-markdown.sh` | `cat urls.txt \| ./batch-markdown.sh ./out` — client-side loop; for ≤20 urls prefer `/batch` (see `batch_markdown.py`) |
+
+All scripts default to `https://zhuikan.com/repos/terry2010__surfbird` when no URL is given — that page is a SPA (use `/content`, `/screenshot` or `/evaluate`; `/markdown` needs article-shaped pages).
 
 ## Error codes worth handling
 
