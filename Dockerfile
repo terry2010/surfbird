@@ -60,6 +60,10 @@ RUN mkdir /out && tar -C /build --exclude='./.git' --exclude='./bazel-*' -cf - .
 # ---------- runtime base ----------
 FROM ${NODE_IMAGE} AS runtime-base
 ENV NODE_ENV=production
+# node slim ships no system CA bundle — node bundles its own roots, but workerd
+# (KJ TLS) reads /etc/ssl/certs and can't fetch any HTTPS site without them.
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app/proxy
 COPY proxy/package.json ./
