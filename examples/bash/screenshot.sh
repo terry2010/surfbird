@@ -3,8 +3,7 @@
 #   SURFBIRD_URL=http://vps:8080 SURFBIRD_TOKEN=xxx ./screenshot.sh https://zhuikan.com/repos/terry2010__surfbird page.png [full]
 set -euo pipefail
 
-URL="${1:-}"
-[ -n "$URL" ] || { echo "usage: $0 <url> [out.png] [full]" >&2; exit 64; }
+URL="${1:-https://zhuikan.com/repos/terry2010__surfbird}"
 OUT="${2:-page.png}"
 FULL="${3:-}"
 BASE="${SURFBIRD_URL:-http://127.0.0.1:8080}"

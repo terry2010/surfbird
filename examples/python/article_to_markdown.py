@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-"""Fetch one article URL → clean markdown file.
+"""Fetch one article URL → clean markdown file. No arg → the default demo page.
 
     SURFBIRD_URL=http://vps:8080 SURFBIRD_TOKEN=xxx \
-      python article_to_markdown.py https://zhuikan.com/repos/terry2010__surfbird out.md
+      python article_to_markdown.py [url] [out.md]
 """
 import os
 import sys
 
 from surfbird import Surfbird, SurfbirdError
 
+DEFAULT_URL = "https://zhuikan.com/repos/terry2010__surfbird"
+
 
 def main() -> int:
-    if len(sys.argv) < 2:
-        sys.exit(__doc__.strip())
-    url = sys.argv[1]
+    url = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_URL
     out = sys.argv[2] if len(sys.argv) > 2 else "-"
 
     sb = Surfbird(
