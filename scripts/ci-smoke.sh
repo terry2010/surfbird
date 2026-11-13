@@ -68,6 +68,16 @@ mcode=$(curl -s -o /dev/null -w '%{http_code}' -m 120 -X POST "http://127.0.0.1:
 echo "   ${URLS[0]} → ${mcode} (expect 200 or 422)"
 [ "$mcode" = 200 ] || [ "$mcode" = 422 ] || { echo "FAIL: markdown pipeline broken"; docker logs "$NAME" 2>&1 | tail -20; exit 1; }
 
+# /batch: one call over all urls → array with per-item ok flags
+echo "== batch endpoint (/batch content over all urls)"
+ujson=$(printf ',"%s"' "${URLS[@]}")
+bresp=$(curl -s -m 240 -X POST "http://127.0.0.1:${PORT}/batch" \
+  -H "Authorization: Bearer ${TOKEN}" -H 'content-type: application/json' \
+  -d "{\"action\":\"content\",\"urls\":[${ujson:1}]}")
+bcode=$(printf '%s' "$bresp" | python3 -c "import json,sys; r=json.load(sys.stdin); print(sum(1 for x in r if x.get('ok')))" 2>/dev/null || echo 0)
+echo "   batch ok count: ${bcode}/${#URLS[@]}"
+[ "$bcode" -ge 1 ] || { echo "FAIL: batch endpoint broken"; printf '%s' "$bresp" | head -c 400; exit 1; }
+
 echo "== ${ok}/${#URLS[@]} ok (need ${NEED})"
 if [ "$ok" -lt "$NEED" ]; then
   echo "FAIL"; docker logs "$NAME" 2>&1 | tail -20
