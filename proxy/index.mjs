@@ -85,15 +85,17 @@ function release() {
 
 // ---------- REST actions over CDP ----------
 const require_ = createRequire(import.meta.url);
-const libCache = {};
-function pageLib(name) {
-  if (!libCache[name]) {
-    const file = name === "readability"
-      ? require_.resolve("@mozilla/readability/Readability.js")
-      : require_.resolve("turndown/dist/turndown.js");
-    libCache[name] = fs.readFileSync(file, "utf8");
+// Readability runs inside the page (needs the live DOM). Turndown runs HERE in
+// Node — its collapseWhitespace hits gaps in the engine's Boa/DOM shim
+// (nodeValue → undefined.replace), while Node turndown parses via domino.
+const TurndownService = require_("turndown");
+const turndown = new TurndownService({ headingStyle: "atx" });
+let readabilitySrc;
+function readabilityLib() {
+  if (!readabilitySrc) {
+    readabilitySrc = fs.readFileSync(require_.resolve("@mozilla/readability/Readability.js"), "utf8");
   }
-  return libCache[name];
+  return readabilitySrc;
 }
 
 async function restAction(action, body) {
@@ -122,17 +124,14 @@ async function restAction(action, body) {
       return { status: 200, type: "application/json", body: JSON.stringify(data) };
     }
     if (action === "markdown") {
-      // Readability extracts the article, turndown converts to real markdown.
-      await page.addScriptTag({ content: pageLib("readability") });
-      await page.addScriptTag({ content: pageLib("turndown") });
-      const out = await page.evaluate(() => {
-        const article = new Readability(document.cloneNode(true)).parse();
-        if (!article) return null;
-        const md = new TurndownService({ headingStyle: "atx" }).turndown(article.content);
-        return { title: article.title, byline: article.byline, excerpt: article.excerpt, url: location.href, markdown: md };
+      // Readability in-page (article extraction), turndown in Node (HTML→md).
+      await page.addScriptTag({ content: readabilityLib() });
+      const article = await page.evaluate(() => {
+        const a = new Readability(document.cloneNode(true)).parse();
+        return a && { title: a.title, byline: a.byline, excerpt: a.excerpt, content: a.content };
       });
-      if (!out) return { status: 422, type: "application/json", body: JSON.stringify({ error: { code: "no_article", message: "Readability could not extract an article" } }) };
-      return { status: 200, type: "application/json", body: JSON.stringify(out) };
+      if (!article) return { status: 422, type: "application/json", body: JSON.stringify({ error: { code: "no_article", message: "Readability could not extract an article" } }) };
+      return { status: 200, type: "application/json", body: JSON.stringify({ ...article, url: body.url, markdown: turndown.turndown(article.content) }) };
     }
     if (action === "evaluate") {
       const result = await page.evaluate(body.script);
