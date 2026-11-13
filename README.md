@@ -85,6 +85,10 @@ Tools: `surf_markdown` `surf_content` `surf_screenshot` `surf_pdf` `surf_evaluat
 
 **No MCP at all?** The REST layer is agent-friendly on its own — [`skills/surfbird/SKILL.md`](skills/surfbird/SKILL.md) is a drop-in skill that teaches any agent to drive it with `curl`.
 
+## Examples
+
+[`examples/`](examples/) — zero-dep Python client (`rss_to_markdown.py` builds a feed→markdown digest for LLM daily reports) and bash/curl scripts.
+
 ## Env
 
 | Var | Default | Meaning |
