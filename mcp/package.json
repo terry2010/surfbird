@@ -1,14 +1,43 @@
 {
   "name": "surfbird-mcp",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
-  "description": "Thin MCP wrapper exposing Surfbird REST actions as MCP tools",
+  "description": "MCP server for Surfbird — surf_markdown/surf_content/surf_screenshot/surf_pdf/surf_evaluate/surf_batch tools over a self-hosted Kitesurf headless browser. Article→markdown for AI agents and RSS digests.",
   "bin": {
     "surfbird-mcp": "./server.mjs"
   },
+  "files": [
+    "server.mjs",
+    "README.md"
+  ],
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "surfbird",
+    "kitesurf",
+    "headless-browser",
+    "web-scraping",
+    "markdown",
+    "ai-agents",
+    "claude",
+    "llm-tools",
+    "rss",
+    "screenshot"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terry2010/surfbird.git",
+    "directory": "mcp"
+  },
+  "homepage": "https://github.com/terry2010/surfbird",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.0",
+    "surfbird": "^0.1.0",
     "zod": "^3.25.0"
   }
 }

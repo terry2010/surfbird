@@ -10,6 +10,7 @@
 //   TLS_CERT_PATH/TLS_KEY_PATH  enable HTTPS when both set
 //   REST_TIMEOUT_MS       per-action timeout (default 120000)
 //   MAX_CONCURRENT_ACTIONS  in-flight REST actions cap (default 2)
+//   MAX_BATCH_URLS        /batch urls per request cap (default 20)
 //   ENGINE_READY_TIMEOUT_MS  wait for engine before listening (default 120000)
 
 import http from "node:http";
@@ -144,6 +145,7 @@ async function restAction(action, body) {
 }
 
 const ACTIONS = new Set(["screenshot", "pdf", "content", "markdown", "evaluate"]);
+const MAX_BATCH = Number(process.env.MAX_BATCH_URLS || 20);
 
 // self-describing API surface for agents/codegen — unauthenticated, static JSON
 const OPENAPI = {
@@ -156,6 +158,7 @@ const OPENAPI = {
     "/content": { post: { summary: "rendered DOM → {title,url,html}", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url"], properties: { url: { type: "string" } } } } } }, responses: { 200: { content: { "application/json": {} } } } } },
     "/markdown": { post: { summary: "article extraction → {title,markdown,...} (Readability+turndown); 422 when no article", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url"], properties: { url: { type: "string" } } } } } }, responses: { 200: { content: { "application/json": {} } }, 422: {} } } },
     "/evaluate": { post: { summary: "evaluate JS in page context → {result}", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url", "script"], properties: { url: { type: "string" }, script: { type: "string" } } } } } }, responses: { 200: { content: { "application/json": {} } } } } },
+    "/batch": { post: { summary: "run one action over many urls sequentially → [{url,ok,status,data|error}]", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["action", "urls"], properties: { action: { type: "string", enum: ["screenshot", "pdf", "content", "markdown", "evaluate"] }, urls: { type: "array", items: { type: "string" }, maxItems: 20 }, script: { type: "string" } } } } } }, responses: { 200: { content: { "application/json": {} } } } } },
   },
 };
 
@@ -178,6 +181,40 @@ const handler = async (req, res) => {
   if (MODE === "auth" && !authed(req)) return err(res, 401, "unauthorized", "missing or bad token");
 
   const action = url.pathname.replaceAll("/", "");
+  if (req.method === "POST" && action === "batch") {
+    const chunks = [];
+    for await (const c of req) chunks.push(c);
+    let body = {};
+    try { body = JSON.parse(Buffer.concat(chunks).toString() || "{}"); } catch {}
+    const urls = Array.isArray(body.urls) ? body.urls : [];
+    if (!ACTIONS.has(body.action)) return err(res, 400, "bad_request", `action must be one of ${[...ACTIONS].join("|")}`);
+    if (!urls.length || urls.length > MAX_BATCH || urls.some(u => typeof u !== "string")) {
+      return err(res, 400, "bad_request", `urls: array of 1..${MAX_BATCH} strings required`);
+    }
+    // sequential per-item acquire — a batch never starves other clients
+    const out = [];
+    for (const u of urls) {
+      await acquire();
+      try {
+        const r = await restAction(body.action, { ...body, url: u });
+        const entry = { url: u, ok: r.status === 200, status: r.status };
+        if (r.type === "application/json") {
+          const d = JSON.parse(r.body.toString());
+          entry[r.status === 200 ? "data" : "error"] = r.status === 200 ? d : (d.error?.code || "error");
+        } else {
+          entry.data = r.body.toString("base64");
+          entry.encoding = "base64";
+          entry.contentType = r.type;
+        }
+        out.push(entry);
+      } catch (e) {
+        out.push({ url: u, ok: false, status: 502, error: String(e?.message || e).slice(0, 300) });
+      } finally {
+        release();
+      }
+    }
+    return json(res, 200, out);
+  }
   if (req.method === "POST" && ACTIONS.has(action)) {
     const chunks = [];
     for await (const c of req) chunks.push(c);

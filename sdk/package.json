@@ -1,0 +1,37 @@
+{
+  "name": "surfbird",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "JS/TS client for Surfbird — the self-hosted Kitesurf headless browser engine. Article markdown extraction, screenshots, PDFs, page JS evaluation and batch fetching over a tiny REST API.",
+  "main": "./index.mjs",
+  "exports": {
+    ".": "./index.mjs"
+  },
+  "files": [
+    "index.mjs",
+    "README.md"
+  ],
+  "keywords": [
+    "surfbird",
+    "kitesurf",
+    "headless-browser",
+    "web-scraping",
+    "markdown",
+    "readability",
+    "screenshot",
+    "pdf",
+    "ai-agents",
+    "browser-automation",
+    "self-hosted"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terry2010/surfbird.git",
+    "directory": "sdk"
+  },
+  "homepage": "https://github.com/terry2010/surfbird",
+  "engines": {
+    "node": ">=18"
+  }
+}
