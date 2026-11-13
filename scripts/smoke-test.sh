@@ -34,14 +34,17 @@ else
 fi
 
 echo "== waiting for engine =="
+# engine has no /health route — raw probes /json/version, auth probes proxy /health
+ok=""
 for i in $(seq 1 60); do
   if [ "$MODE" = "auth" ]; then
-    curl -sf -H "Authorization: Bearer $TOKEN" "http://127.0.0.1:$PORT/health" >/dev/null 2>&1 && break
+    curl -sf "http://127.0.0.1:$PORT/health" >/dev/null 2>&1 && { ok=1; break; }
   else
-    curl -sf "http://127.0.0.1:$EPORT/health" >/dev/null 2>&1 && break
+    curl -sf "http://127.0.0.1:$EPORT/json/version" >/dev/null 2>&1 && { ok=1; break; }
   fi
   sleep 5
 done
+[ -n "$ok" ] || { echo "FAIL: engine not healthy after 5min"; docker logs surfbird-test --tail 40; exit 1; }
 
 echo "== logs =="
 docker logs surfbird-test --tail 15
