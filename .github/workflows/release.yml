@@ -105,7 +105,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: ${{ env.IMAGE }}
-          short-description: "Unofficial self-hosted Docker image of Cloudflare Kitesurf — headless browser for AI agents: article→markdown, screenshots, PDFs, CDP over token auth"
+          short-description: "Unofficial self-hosted Kitesurf headless browser for AI agents: markdown, screenshots, PDF, CDP"
 
       - name: Record released upstream tag
         run: |
