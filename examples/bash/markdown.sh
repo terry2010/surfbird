@@ -11,12 +11,21 @@ TOKEN="${SURFBIRD_TOKEN:-}"
 auth=()
 [ -n "$TOKEN" ] && auth=(-H "Authorization: Bearer $TOKEN")
 
-body=$(curl -sf -X POST "$BASE/markdown" \
+resp=$(curl -s -X POST "$BASE/markdown" \
   "${auth[@]}" -H 'content-type: application/json' \
-  -d "{\"url\":\"$URL\"}") || { echo "request failed" >&2; exit 1; }
+  -w '\n%{http_code}' \
+  -d "{\"url\":\"$URL\"}")
+code=${resp##*$'\n'}
+body=${resp%$'\n'*}
+
+if [ "$code" != "200" ]; then
+  msg=$(printf '%s' "$body" | jq -r '.error.message // .' 2>/dev/null)
+  echo "HTTP $code: $msg" >&2
+  exit 1
+fi
 
 if [ "$OUT" = "-" ]; then
-  printf '%s' "$body" | jq -r '.markdown // (.error.message // .)'
+  printf '%s' "$body" | jq -r '.markdown'
 else
   printf '%s' "$body" | jq -r '"# \(.title)\n\n" + .markdown' > "$OUT"
   echo "$OUT written ($(wc -c < "$OUT" | tr -d ' ') bytes)" >&2
