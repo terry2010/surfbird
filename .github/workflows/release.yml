@@ -99,6 +99,14 @@ jobs:
             docker push "${IMAGE}:$ref"
           done
 
+      - name: Sync README to Docker Hub overview
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ env.IMAGE }}
+          short-description: "Unofficial self-hosted Docker image of Cloudflare Kitesurf — headless browser for AI agents: article→markdown, screenshots, PDFs, CDP over token auth"
+
       - name: Record released upstream tag
         run: |
           echo "$TAG" > upstream-tag.txt

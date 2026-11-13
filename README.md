@@ -55,21 +55,23 @@ curl -H "Authorization: Bearer $TOKEN" \
      http://<host>:8080/markdown | jq -r .markdown
 ```
 
-Endpoints: `POST /screenshot | /pdf | /content | /markdown | /evaluate`, `GET /health`.
+Endpoints: `POST /screenshot | /pdf | /content | /markdown | /evaluate | /batch` (one action over up to `MAX_BATCH_URLS` urls, per-item results), `GET /health`, `GET /openapi.json`.
 All other paths transparently proxy to the engine (landing page, `/json/*`, `/rbi/*`).
+
+**JS/TS client:** [`surfbird`](https://www.npmjs.com/package/surfbird) on npm — `new Surfbird(url,{token}).markdown(u)` etc., plus `sb.batch(action, urls)`.
 
 ## MCP (Model Context Protocol)
 
 Two ways to plug Surfbird into an MCP-capable agent (Claude Code, Cursor, Windsurf, …):
 
-**A. `surfbird-mcp` — thin wrapper (recommended).** Exposes our REST actions as MCP tools — including `surf_markdown`, which stock browser MCPs don't have:
+**A. `surfbird-mcp` — thin wrapper (recommended).** Exposes our REST actions as MCP tools — including `surf_markdown` and `surf_batch`, which stock browser MCPs don't have:
 
 ```json
 {
   "mcpServers": {
     "surfbird": {
       "command": "npx",
-      "args": ["-y", "github:terry2010/surfbird", "surfbird-mcp"],
+      "args": ["-y", "surfbird-mcp"],
       "env": {
         "SURFBIRD_URL": "http://<host>:8080",
         "SURFBIRD_TOKEN": "<token>"
@@ -79,7 +81,7 @@ Two ways to plug Surfbird into an MCP-capable agent (Claude Code, Cursor, Windsu
 }
 ```
 
-Tools: `surf_markdown` `surf_content` `surf_screenshot` `surf_pdf` `surf_evaluate` `surf_health`.
+Tools: `surf_markdown` `surf_content` `surf_screenshot` `surf_pdf` `surf_evaluate` `surf_batch` `surf_health`.
 
 **B. `chrome-devtools-mcp` — full CDP surface.** Points straight at the proxied WebSocket (`/devtools/browser` passes through with Bearer auth) — more tools, more moving parts. See upstream docs; if your client can't send custom WS headers, run a `raw` image on a private network instead.
 
@@ -98,6 +100,7 @@ Tools: `surf_markdown` `surf_content` `surf_screenshot` `surf_pdf` `surf_evaluat
 | `TLS_CERT_PATH` / `TLS_KEY_PATH` | — | mount certs → HTTPS. Want auto-ACME? put Caddy outside |
 | `REST_TIMEOUT_MS` | 120000 | per-action timeout |
 | `MAX_CONCURRENT_ACTIONS` | 2 | in-flight REST actions cap (each ≈ an engine isolate) |
+| `MAX_BATCH_URLS` | 20 | max urls per `/batch` call |
 | `ENGINE_READY_TIMEOUT_MS` | 120000 | startup wait for engine before proxy listens |
 | `SURFBIRD_MODE` | per target | `raw` / `auth` |
 
