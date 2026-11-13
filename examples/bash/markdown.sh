@@ -3,7 +3,8 @@
 #   SURFBIRD_URL=http://vps:8080 SURFBIRD_TOKEN=xxx ./markdown.sh https://zhuikan.com/repos/terry2010__surfbird [out.md]
 set -euo pipefail
 
-URL="${1:?usage: markdown.sh <url> [out.md]}"
+URL="${1:-}"
+[ -n "$URL" ] || { echo "usage: $0 <url> [out.md]" >&2; exit 64; }
 OUT="${2:--}"
 BASE="${SURFBIRD_URL:-http://127.0.0.1:8080}"
 TOKEN="${SURFBIRD_TOKEN:-}"
