@@ -1,0 +1,110 @@
+name: release
+
+# Daily: check cloudflare/kitesurf for a new tag → build both image variants →
+# smoke-test against real sites → push to Docker Hub only if tests pass.
+# Manual: Actions → release → Run workflow (optionally pin a tag / force).
+
+on:
+  schedule:
+    - cron: "0 2 * * *" # 02:00 UTC daily
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "upstream kitesurf tag to build (blank = latest)"
+        required: false
+        type: string
+      force:
+        description: "rebuild+push even if this tag was already released"
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: surfbird-release
+  cancel-in-progress: false
+
+permissions:
+  contents: write # the workflow commits the released tag back to upstream-tag.txt
+
+env:
+  IMAGE: terry2010/surfbird
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.resolve.outputs.tag }}
+      changed: ${{ steps.resolve.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: resolve
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_TAG: ${{ inputs.tag }}
+          INPUT_FORCE: ${{ inputs.force }}
+        run: |
+          set -e
+          if [ -n "$INPUT_TAG" ]; then
+            tag="$INPUT_TAG"
+          else
+            tag=$(gh api repos/cloudflare/kitesurf/tags --paginate --jq '.[].name' | sort -V | tail -1)
+          fi
+          [ -n "$tag" ] || { echo "could not resolve upstream tag" >&2; exit 1; }
+          last=$(cat upstream-tag.txt || true)
+          echo "latest upstream tag: $tag (last released: $last, force: ${INPUT_FORCE:-false})"
+          changed=false
+          [ "$tag" != "$last" ] && changed=true
+          [ "${INPUT_FORCE:-false}" = "true" ] && changed=true
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+
+  release:
+    needs: check
+    if: needs.check.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      TAG: ${{ needs.check.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build raw + auth (load locally)
+        run: |
+          set -e
+          for t in raw auth; do
+            docker buildx build \
+              --target "$t" \
+              --build-arg KITESURF_REF="$TAG" \
+              --cache-from "type=gha,scope=$t" \
+              --cache-to "type=gha,mode=max,scope=$t" \
+              --load -t "${IMAGE}:$t" -t "${IMAGE}:$t-$TAG" .
+          done
+
+      - name: Smoke test (auth image, real sites)
+        run: bash scripts/ci-smoke.sh "${IMAGE}:auth"
+
+      - name: Push all tags
+        run: |
+          set -e
+          docker tag "${IMAGE}:auth" "${IMAGE}:latest"
+          for ref in "raw-$TAG" "auth-$TAG" "raw" "auth" "latest"; do
+            docker push "${IMAGE}:$ref"
+          done
+
+      - name: Record released upstream tag
+        run: |
+          echo "$TAG" > upstream-tag.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add upstream-tag.txt
+          git diff --cached --quiet && exit 0
+          git commit -m "release: upstream kitesurf $TAG"
+          git push

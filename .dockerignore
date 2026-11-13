@@ -1,0 +1,8 @@
+.git
+docs/
+ctx/
+node_modules/
+*.log
+.DS_Store
+Dockerfile.prebuilt
+Dockerfile.prebuilt.dockerignore

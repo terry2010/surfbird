@@ -1,0 +1,7 @@
+node_modules/
+ctx/
+*.log
+.DS_Store
+docs/
+patches/*.patch
+!patches/.gitkeep

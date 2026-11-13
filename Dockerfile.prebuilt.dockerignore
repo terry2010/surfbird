@@ -1,0 +1,6 @@
+kitesurf/.git
+kitesurf/node_modules
+kitesurf/**/node_modules
+kitesurf/bazel-*
+kitesurf/.cache
+*.log

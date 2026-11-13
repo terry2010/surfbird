@@ -1,0 +1,10 @@
+Surfbird
+Copyright 2026 terry2010
+
+This product includes software developed by Cloudflare, Inc.
+Kitesurf browser engine (https://github.com/cloudflare/kitesurf)
+Licensed under the Apache License, Version 2.0.
+
+Surfbird is an unofficial, community-maintained Docker distribution of the
+Kitesurf engine. It is not affiliated with, endorsed by, or sponsored by
+Cloudflare, Inc. "Kitesurf" and "Cloudflare" are trademarks of Cloudflare, Inc.

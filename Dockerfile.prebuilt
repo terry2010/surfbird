@@ -1,0 +1,27 @@
+# Surfbird image from a locally-built Kitesurf checkout.
+# Build context must contain:  kitesurf/  (built artifacts in tree)  proxy/  entrypoint.sh
+FROM node:22-bookworm-slim
+
+ENV NODE_ENV=production
+RUN npm install -g pnpm@9.15.4
+
+# auth proxy
+WORKDIR /app/proxy
+COPY proxy/package.json ./
+RUN npm install --omit=dev --registry=https://registry.npmmirror.com
+COPY proxy/ ./
+
+# engine tree (prebuilt artifacts included; node_modules excluded via .dockerignore)
+WORKDIR /app/kitesurf
+COPY kitesurf/ ./
+RUN pnpm install --frozen-lockfile --filter "@kitesurf/engine..." --registry=https://registry.npmmirror.com
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# health = raw probes engine /json/version, auth probes proxy /health
+HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=3 \
+  CMD node -e "const a=(process.env.SURFBIRD_MODE||'raw')==='auth';const p=a?(process.env.SURFBIRD_PORT||8080):8787;const path=a?'/health':'/json/version';fetch('http://127.0.0.1:'+p+path).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+
+EXPOSE 8080 8787
+ENTRYPOINT ["/entrypoint.sh"]

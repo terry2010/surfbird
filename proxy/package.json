@@ -1,0 +1,15 @@
+{
+  "name": "surfbird-proxy",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "index.mjs",
+  "dependencies": {
+    "puppeteer-core": "^25.16.0",
+    "@mozilla/readability": "^0.6.0",
+    "turndown": "^7.2.0"
+  },
+  "scripts": {
+    "start": "node index.mjs"
+  }
+}
