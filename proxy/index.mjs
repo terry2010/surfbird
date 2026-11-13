@@ -145,6 +145,20 @@ async function restAction(action, body) {
 
 const ACTIONS = new Set(["screenshot", "pdf", "content", "markdown", "evaluate"]);
 
+// self-describing API surface for agents/codegen — unauthenticated, static JSON
+const OPENAPI = {
+  openapi: "3.0.3",
+  info: { title: "Surfbird REST", version: "0.1.0", description: "REST over CDP for a self-hosted Kitesurf browser engine. Auth: Bearer token (auth images)." },
+  paths: {
+    "/health": { get: { summary: "engine liveness (unauthenticated)", responses: { 200: {}, 503: {} } } },
+    "/screenshot": { post: { summary: "render page → PNG", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url"], properties: { url: { type: "string" }, width: { type: "integer" }, height: { type: "integer" }, fullPage: { type: "boolean" } } } } } }, responses: { 200: { content: { "image/png": {} } } } } },
+    "/pdf": { post: { summary: "render page → PDF", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url"], properties: { url: { type: "string" }, landscape: { type: "boolean" }, format: { type: "string" } } } } } }, responses: { 200: { content: { "application/pdf": {} } } } } },
+    "/content": { post: { summary: "rendered DOM → {title,url,html}", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url"], properties: { url: { type: "string" } } } } } }, responses: { 200: { content: { "application/json": {} } } } } },
+    "/markdown": { post: { summary: "article extraction → {title,markdown,...} (Readability+turndown); 422 when no article", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url"], properties: { url: { type: "string" } } } } } }, responses: { 200: { content: { "application/json": {} } }, 422: {} } } },
+    "/evaluate": { post: { summary: "evaluate JS in page context → {result}", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url", "script"], properties: { url: { type: "string" }, script: { type: "string" } } } } } }, responses: { 200: { content: { "application/json": {} } } } } },
+  },
+};
+
 // ---------- HTTP server ----------
 const handler = async (req, res) => {
   const url = new URL(req.url, "http://x");
@@ -154,6 +168,11 @@ const handler = async (req, res) => {
     const ok = await engineOk();
     res.writeHead(ok ? 200 : 503, { "content-type": "text/plain" });
     return res.end(ok ? "ok" : "engine not ready");
+  }
+
+  if (req.method === "GET" && url.pathname === "/openapi.json") {
+    res.writeHead(200, { "content-type": "application/json" });
+    return res.end(JSON.stringify(OPENAPI));
   }
 
   if (MODE === "auth" && !authed(req)) return err(res, 401, "unauthorized", "missing or bad token");
