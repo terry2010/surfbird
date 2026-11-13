@@ -107,4 +107,6 @@ jobs:
           git add upstream-tag.txt
           git diff --cached --quiet && exit 0
           git commit -m "release: upstream kitesurf $TAG"
+          # the build takes ~20min — other pushes may have landed meanwhile
+          git pull --rebase
           git push
