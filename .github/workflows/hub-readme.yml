@@ -1,0 +1,22 @@
+name: hub-readme
+
+# Manual: Actions → hub-readme → Run workflow
+# Syncs README.md to the Docker Hub repo overview without a full image rebuild.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: terry2010/surfbird
+          short-description: "Unofficial self-hosted Docker image of Cloudflare Kitesurf — headless browser for AI agents: article→markdown, screenshots, PDFs, CDP over token auth"

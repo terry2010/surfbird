@@ -1,8 +1,10 @@
 # Surfbird
 
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![release](https://github.com/terry2010/surfbird/actions/workflows/release.yml/badge.svg)](https://github.com/terry2010/surfbird/actions/workflows/release.yml)
-[![Docker Hub](https://img.shields.io/badge/docker-terry2010%2Fsurfbird-2496ED.svg)](https://hub.docker.com/r/terry2010/surfbird)
+<p>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License"></a>
+<a href="https://github.com/terry2010/surfbird/actions/workflows/release.yml"><img src="https://github.com/terry2010/surfbird/actions/workflows/release.yml/badge.svg" alt="release"></a>
+<a href="https://hub.docker.com/r/terry2010/surfbird"><img src="https://img.shields.io/badge/docker-terry2010%2Fsurfbird-2496ED.svg" alt="Docker Hub"></a>
+</p>
 
 **Kitesurf, self-hosted.** An unofficial Docker distribution of [Cloudflare Kitesurf](https://github.com/cloudflare/kitesurf) — the experimental browser engine built for AI agents.
 
