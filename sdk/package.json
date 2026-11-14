@@ -1,6 +1,6 @@
 {
   "name": "surfbird",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "JS/TS client for Surfbird — the self-hosted Kitesurf headless browser engine. Article markdown extraction, screenshots, PDFs, page JS evaluation and batch fetching over a tiny REST API.",
   "main": "./index.mjs",
