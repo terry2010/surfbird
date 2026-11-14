@@ -1,0 +1,61 @@
+# Surfbird
+
+> Unofficial self-hosted Docker distribution of Cloudflare Kitesurf — a
+> headless browser engine built for AI agents. One container gives you CDP
+> (Puppeteer/Playwright-compatible), optional token auth, and a REST action
+> layer: markdown extraction, screenshots, PDFs, HTML content, JS evaluation,
+> and batch fetching. Not affiliated with Cloudflare.
+
+## Images
+
+- `terry2010/surfbird:raw` — engine only, container port 8787. CDP +
+  `/json/*` + `/rbi/*` routes. No auth — bind loopback only.
+- `terry2010/surfbird:auth` — engine + token proxy, container port 8080.
+  REST actions live here. `Authorization: Bearer $SURFBIRD_TOKEN`.
+- `terry2010/surfbird:raw-<tag>` / `:auth-<tag>` — pinned to upstream kitesurf
+  tag (e.g. `auth-2026.11.9`).
+
+## Docs
+
+- [README](https://github.com/terry2010/surfbird#readme): quick start, image
+  table, env vars, security notes
+- [SKILL.md](https://github.com/terry2010/surfbird/blob/main/skills/surfbird/SKILL.md):
+  agent-facing REST usage guide (mount as an agent skill)
+- [AGENTS.md](https://github.com/terry2010/surfbird/blob/main/AGENTS.md):
+  repo guide for coding agents
+- OpenAPI: `GET /openapi.json` on the auth image — machine-readable spec
+  for every REST route
+
+## Clients
+
+- [JS SDK](https://www.npmjs.com/package/surfbird): `npm i surfbird` —
+  `new Surfbird(url, {token})` → `.markdown(url) .screenshot(url) .pdf(url)
+  .content(url) .evaluate(url,script) .batch(action,urls,opts)`
+- [MCP server](https://www.npmjs.com/package/surfbird-mcp):
+  `npx surfbird-mcp` — stdio tools `surf_markdown surf_content
+  surf_screenshot surf_pdf surf_evaluate surf_batch`
+- [Python client](https://github.com/terry2010/surfbird/blob/main/examples/python/surfbird.py):
+  stdlib-only, same method surface
+- [Bash examples](https://github.com/terry2010/surfbird/tree/main/examples/bash):
+  curl one-liners per endpoint
+
+## REST API (auth image only)
+
+- `POST /markdown` `{url,timeout?}` — article → markdown (Readability+Turndown)
+- `POST /content` `{url,timeout?}` — rendered HTML
+- `POST /screenshot` `{url,timeout?,width?,height?,fullPage?}` — PNG (base64)
+- `POST /pdf` `{url,timeout?,landscape?}` — PDF (base64)
+- `POST /evaluate` `{url,script,timeout?}` — run JS in page, return result
+- `POST /batch` `{action,urls[],script?,timeout?}` — up to MAX_BATCH_URLS
+- `GET /health` — liveness (no auth). `GET /openapi.json` — spec.
+- Errors: 401 unauthorized, 400 invalid_input, 403 url_blocked,
+  413 payload_too_large, 429 busy, 504 action_timeout, 502 bad_gateway
+
+## Env vars
+
+- `SURFBIRD_MODE` `raw|auth` (default raw) · `SURFBIRD_TOKEN` required in auth
+- `SURFBIRD_PORT` 8080 · `ENGINE_PORT` 8787 · `ENGINE_HOST` 127.0.0.1
+- `REST_TIMEOUT_MS` 120000 · `MAX_CONCURRENT_ACTIONS` 2 · `MAX_BATCH_URLS` 20
+- `MAX_BODY_BYTES` 4MiB · `SURFBIRD_URL_ALLOWLIST` / `SURFBIRD_URL_BLOCKLIST`
+  regex URL gates · `TLS_CERT_PATH`/`TLS_KEY_PATH` HTTPS ·
+  `SURFBIRD_INSPECTOR=1` exposes worker inspector :9229

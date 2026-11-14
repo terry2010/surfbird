@@ -7,7 +7,7 @@ Unofficial self-hosted Docker distribution of Cloudflare Kitesurf. See README.md
 - `Dockerfile` — full multi-stage build (`raw`/`auth` targets); `Dockerfile.prebuilt` for prebuilt engine trees
 - `proxy/index.mjs` — auth + REST proxy (all endpoint logic lives here)
 - `entrypoint.sh` — container process supervision (raw=engine only, auth=engine+proxy)
-- `mcp/server.mjs` — thin MCP stdio server wrapping the REST actions
+- `mcp/server.mjs` — thin MCP stdio server wrapping the REST actions; `mcp/server.json` — MCP Registry metadata (version must match package.json before `mcp-publisher publish`)
 - `skills/surfbird/SKILL.md` — agent-facing REST usage doc
 - `examples/` — python + bash clients
 - `scripts/ci-smoke.sh` — container smoke test (used by CI); `scripts/smoke-test.sh` — local prebuilt image test

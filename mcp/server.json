@@ -1,0 +1,43 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.terry2010/surfbird-mcp",
+  "description": "MCP server for Surfbird — the self-hosted Kitesurf headless browser. Article-to-markdown extraction, rendered HTML, screenshots, PDFs, in-page JS evaluation and batch fetching for AI agents and RSS digests.",
+  "repository": {
+    "url": "https://github.com/terry2010/surfbird",
+    "source": "github"
+  },
+  "version": "0.1.2",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "surfbird-mcp",
+      "version": "0.1.2",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "SURFBIRD_URL",
+          "description": "Base URL of the Surfbird auth-image REST proxy",
+          "isRequired": false,
+          "default": "http://127.0.0.1:8080",
+          "format": "string"
+        },
+        {
+          "name": "SURFBIRD_TOKEN",
+          "description": "Bearer token matching SURFBIRD_TOKEN on the container",
+          "isRequired": false,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "SURFBIRD_TIMEOUT_MS",
+          "description": "Per-tool timeout in milliseconds",
+          "isRequired": false,
+          "default": "120000",
+          "format": "number"
+        }
+      ]
+    }
+  ]
+}

@@ -138,3 +138,29 @@ jobs:
           # the build takes ~20min — other pushes may have landed meanwhile
           git pull --rebase
           git push
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          rel="kitesurf-$TAG"
+          if gh release view "$rel" >/dev/null 2>&1; then
+            echo "release $rel already exists, skipping"
+            exit 0
+          fi
+          cat > /tmp/notes.md <<NOTES
+          Docker images built from upstream [kitesurf $TAG](https://github.com/cloudflare/kitesurf/releases/tag/$TAG).
+
+          | image | pull |
+          |---|---|
+          | auth — REST actions + token auth + optional TLS | \`docker pull terry2010/surfbird:auth-$TAG\` |
+          | raw — engine + CDP only | \`docker pull terry2010/surfbird:raw-$TAG\` |
+
+          Floating tags \`raw\` / \`auth\` / \`latest\` point at this build.
+          Unofficial distribution — not affiliated with Cloudflare.
+          NOTES
+          gh release create "$rel" \
+            --target "$(git rev-parse HEAD)" \
+            --title "kitesurf $TAG" \
+            --notes-file /tmp/notes.md

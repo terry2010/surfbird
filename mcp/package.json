@@ -1,6 +1,7 @@
 {
   "name": "surfbird-mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
+  "mcpName": "io.github.terry2010/surfbird-mcp",
   "type": "module",
   "description": "MCP server for Surfbird — surf_markdown/surf_content/surf_screenshot/surf_pdf/surf_evaluate/surf_batch tools over a self-hosted Kitesurf headless browser. Article→markdown for AI agents and RSS digests.",
   "bin": {
