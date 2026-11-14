@@ -14,7 +14,8 @@ export class SurfbirdError extends Error {
 
 export class Surfbird {
   /**
-   * @param {string} base  e.g. "http://127.0.0.1:8080" (auth) or ":8787" (raw)
+   * @param {string} base  e.g. "http://127.0.0.1:8080" — the auth image's proxy.
+   *   The raw image has no REST layer (engine-only: CDP + /json/* + /rbi/*).
    * @param {object} [opts]
    * @param {string} [opts.token]   Bearer token (required on auth images)
    * @param {number} [opts.timeout] per-request ms, default 120000
@@ -92,10 +93,13 @@ export class Surfbird {
   /**
    * Run one action over many urls, sequentially (respects the server
    * concurrency gate). Returns [{url, ok, status, data|error}] in input order.
-   * opts: {timeout} — overall batch timeout, default 10min.
+   * opts: {script, timeout} — script required for action="evaluate";
+   * timeout defaults to per-request timeout × urls (matches server worst case).
    */
   async batch(action, urls, opts = {}) {
-    const res = await this.#post("batch", { action, urls }, opts.timeout ?? 600_000);
+    const { timeout, ...rest } = opts;
+    const res = await this.#post("batch", { action, urls, ...rest },
+      timeout ?? this.timeout * urls.length);
     return JSON.parse(res.toString());
   }
 }

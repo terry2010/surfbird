@@ -51,6 +51,11 @@ class Surfbird:
         except Exception:
             return False
 
+    def openapi(self) -> dict:
+        """Server's OpenAPI description (unauthenticated)."""
+        with urllib.request.urlopen(f"{self.base}/openapi.json", timeout=10) as r:
+            return json.loads(r.read())
+
     def markdown(self, url: str) -> dict:
         """→ {title, byline, excerpt, url, markdown}; raises SurfbirdError(422) if no article."""
         data, _ = self._post("markdown", {"url": url})
@@ -77,12 +82,17 @@ class Surfbird:
         data, _ = self._post("evaluate", {"url": url, "script": script})
         return json.loads(data).get("result")
 
-    def batch(self, action: str, urls: list[str], timeout: int | None = None) -> list[dict]:
+    def batch(self, action: str, urls: list[str], script: str | None = None,
+              timeout: int | None = None) -> list[dict]:
         """ONE POST /batch → [{url, ok, status, data|error}].
-        Per-item failures are entries, not exceptions. Max MAX_BATCH_URLS (20) urls."""
+        Per-item failures are entries, not exceptions. Max MAX_BATCH_URLS (20) urls.
+        `script` is required when action="evaluate"."""
         old, self.timeout = self.timeout, timeout or self.timeout * len(urls)
         try:
-            data, _ = self._post("batch", {"action": action, "urls": urls})
+            payload = {"action": action, "urls": urls}
+            if script is not None:
+                payload["script"] = script
+            data, _ = self._post("batch", payload)
             return json.loads(data)
         finally:
             self.timeout = old

@@ -6,7 +6,8 @@ set -euo pipefail
 
 URL="${1:-https://zhuikan.com/repos/terry2010__surfbird}"
 OUT="${2:-page.pdf}"
-LAND="${3:-false}"
+LAND=false
+[ "${3:-}" = "true" ] || [ "${3:-}" = "landscape" ] && LAND=true
 BASE="${SURFBIRD_URL:-http://127.0.0.1:8080}"
 TOKEN="${SURFBIRD_TOKEN:-}"
 
@@ -15,7 +16,7 @@ auth=()
 
 curl -sf -X POST "$BASE/pdf" \
   "${auth[@]}" -H 'content-type: application/json' \
-  -d "{\"url\":\"$URL\",\"landscape\":$LAND}" \
+  -d "$(jq -nc --arg url "$URL" --argjson land "$LAND" '{url:$url,landscape:$land}')" \
   -o "$OUT"
 
 echo "wrote $OUT ($(stat -f%z "$OUT" 2>/dev/null || stat -c%s "$OUT") bytes)"

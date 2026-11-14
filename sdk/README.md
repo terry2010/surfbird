@@ -38,7 +38,7 @@ const results = await sb.batch("markdown", [url1, url2, url3]);
 | `sb.screenshot(url, {width, height, fullPage})` | PNG `Buffer` |
 | `sb.pdf(url, {landscape, format})` | PDF `Buffer` |
 | `sb.evaluate(url, script)` | JSON-serializable result |
-| `sb.batch(action, urls, {timeout})` | `[{url, ok, status, data\|error}]` (action: markdown/content/evaluate/screenshot/pdf) |
+| `sb.batch(action, urls, {script?, timeout?})` | `[{url, ok, status, data\|error}]` (action: markdown/content/evaluate/screenshot/pdf; `script` required for evaluate) |
 | `sb.health()` | `boolean` |
 | `sb.openapi()` | server's OpenAPI JSON |
 
@@ -47,7 +47,7 @@ Env vars used by examples: `SURFBIRD_URL`, `SURFBIRD_TOKEN`.
 ## Get a server
 
 ```bash
-docker run -d -p 8080:8080 -e SURFBIRD_TOKEN=$(openssl rand -hex 24) terry2010/surfbird:auth
+docker run -d -p 127.0.0.1:8080:8080 -e SURFBIRD_TOKEN=$(openssl rand -hex 24) terry2010/surfbird:auth
 ```
 
 MCP instead of a client lib? → [`surfbird-mcp`](https://www.npmjs.com/package/surfbird-mcp)

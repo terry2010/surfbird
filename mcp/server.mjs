@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // surfbird-mcp — thin MCP stdio server exposing Surfbird's REST actions as tools.
 // No browser code here: every tool is one POST to the Surfbird proxy, which owns
-// the CDP plumbing. Auth is a Bearer header — works against both raw (token-less)
-// and auth images.
+// the CDP plumbing. The REST layer only exists on the auth image (raw exposes
+// just the engine: CDP + /json/* + /rbi/*); SURFBIRD_TOKEN is the Bearer header.
 //
 // Env:
 //   SURFBIRD_URL         base URL (default http://127.0.0.1:8080)
@@ -24,7 +24,7 @@ const text = (s) => ({ content: [{ type: "text", text: s }] });
 const jsonResult = async (p) => text(JSON.stringify(await p, null, 2));
 const fail = (e) => ({ isError: true, content: [{ type: "text", text: String(e?.message || e) }] });
 
-const urlShape = { url: z.string().url().describe("page URL to visit") };
+const urlShape = { url: z.url().describe("page URL to visit") };
 
 const server = new McpServer({ name: "surfbird", version: "0.1.0" });
 
@@ -104,12 +104,12 @@ server.tool(
   "Run one action over many urls in a single call — sequential server-side, failures don't abort the batch. Actions: markdown, content, evaluate. For RSS-digest / bulk-fetch workloads.",
   {
     action: z.enum(["markdown", "content", "evaluate"]).describe("REST action to apply to each url"),
-    urls: z.array(z.string().url()).min(1).max(20),
+    urls: z.array(z.url()).min(1).max(20),
     script: z.string().optional().describe("required when action=evaluate"),
   },
   async ({ action, urls, script }) => {
     try {
-      const results = await sb.batch(action, urls, { timeout: TIMEOUT * urls.length });
+      const results = await sb.batch(action, urls, { script, timeout: TIMEOUT * urls.length });
       return text(JSON.stringify(results.map(({ url, ok, status, data, error }) =>
         ({ url, ok, status, ...(ok ? { data } : { error }) })), null, 2));
     } catch (e) { return fail(e); }

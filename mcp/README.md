@@ -37,14 +37,14 @@ Exposes your own browser API as MCP tools — including **`surf_markdown` (artic
 
 | Var | Default | Meaning |
 |---|---|---|
-| `SURFBIRD_URL` | `http://127.0.0.1:8080` | proxy base URL (auth) or `:8787` (raw) |
+| `SURFBIRD_URL` | `http://127.0.0.1:8080` | proxy base URL — REST lives on the auth image; raw's `:8787` is engine-only (CDP) |
 | `SURFBIRD_TOKEN` | — | Bearer token for auth images |
 | `SURFBIRD_TIMEOUT_MS` | `120000` | per-tool timeout |
 
 ## Get a server
 
 ```bash
-docker run -d -p 8080:8080 -e SURFBIRD_TOKEN=$(openssl rand -hex 24) terry2010/surfbird:auth
+docker run -d -p 127.0.0.1:8080:8080 -e SURFBIRD_TOKEN=$(openssl rand -hex 24) terry2010/surfbird:auth
 ```
 
 JS/TS client instead of MCP? → [`surfbird`](https://www.npmjs.com/package/surfbird)

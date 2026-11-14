@@ -14,7 +14,7 @@ auth=()
 [ -n "$TOKEN" ] && auth=(-H "Authorization: Bearer $TOKEN")
 
 jq -nc --arg url "$URL" --arg script "$SCRIPT" '{url:$url,script:$script}' \
-| curl -s -X POST "$BASE/evaluate" \
+| curl -sS -X POST "$BASE/evaluate" \
     "${auth[@]}" -H 'content-type: application/json' \
     -d @- \
-| jq .result
+| jq '.result // .error // .'

@@ -24,7 +24,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write # the workflow commits the released tag back to upstream-tag.txt
+  contents: read # jobs that need more declare it themselves
 
 env:
   IMAGE: terry2010/surfbird
@@ -50,6 +50,10 @@ jobs:
             tag=$(gh api repos/cloudflare/kitesurf/tags --paginate --jq '.[].name' | sort -V | tail -1)
           fi
           [ -n "$tag" ] || { echo "could not resolve upstream tag" >&2; exit 1; }
+          # charset check — the tag later lands inside a shell-expanded git fetch
+          case "$tag" in
+            *[!A-Za-z0-9._/-]*|-*) echo "invalid tag: $tag" >&2; exit 1 ;;
+          esac
           last=$(cat upstream-tag.txt || true)
           echo "latest upstream tag: $tag (last released: $last, force: ${INPUT_FORCE:-false})"
           changed=false
@@ -63,6 +67,8 @@ jobs:
     if: needs.check.outputs.changed == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 360
+    permissions:
+      contents: write # commits the released tag back to upstream-tag.txt
     env:
       TAG: ${{ needs.check.outputs.tag }}
     steps:
@@ -91,6 +97,20 @@ jobs:
       - name: Smoke test (auth image, real sites)
         run: bash scripts/ci-smoke.sh "${IMAGE}:auth"
 
+      - name: Smoke test (raw image, boot check)
+        run: |
+          set -e
+          docker run -d --name surfbird-ci-raw -p 127.0.0.1:18787:8787 "${IMAGE}:raw" >/dev/null
+          ok=""
+          for _ in $(seq 1 60); do
+            curl -sf http://127.0.0.1:18787/json/version >/dev/null 2>&1 && { ok=1; break; }
+            sleep 3
+          done
+          logs=$(docker logs surfbird-ci-raw 2>&1 | tail -30)
+          docker rm -f surfbird-ci-raw >/dev/null
+          [ -n "$ok" ] || { echo "FAIL: raw engine never answered"; printf '%s\n' "$logs"; exit 1; }
+          echo "raw engine up"
+
       - name: Push all tags
         run: |
           set -e
@@ -100,7 +120,7 @@ jobs:
           done
 
       - name: Sync README to Docker Hub overview
-        uses: peter-evans/dockerhub-description@v4
+        uses: peter-evans/dockerhub-description@432a30c9e07499fd01da9f8a49f0faf9e0ca5b77 # v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}

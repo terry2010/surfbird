@@ -29,7 +29,7 @@ Images auto-build daily when upstream cuts a new tag; per-tag pins like `terry20
 docker run -d -p 127.0.0.1:8787:8787 terry2010/surfbird:raw
 
 # auth — one command, token + REST actions
-docker run -d -p 8080:8080 -e SURFBIRD_TOKEN=$(openssl rand -hex 24) terry2010/surfbird:auth
+docker run -d -p 127.0.0.1:8080:8080 -e SURFBIRD_TOKEN=$(openssl rand -hex 24) terry2010/surfbird:auth
 ```
 
 ## Usage
@@ -103,10 +103,16 @@ Tools: `surf_markdown` `surf_content` `surf_screenshot` `surf_pdf` `surf_evaluat
 | `REST_TIMEOUT_MS` | 120000 | per-action timeout |
 | `MAX_CONCURRENT_ACTIONS` | 2 | in-flight REST actions cap (each ≈ an engine isolate) |
 | `MAX_BATCH_URLS` | 20 | max urls per `/batch` call |
+| `MAX_BODY_BYTES` | 4194304 | REST request body cap (413 beyond) |
+| `SURFBIRD_INSPECTOR` | — | `1` opens the workerd debug inspector on :9229 (loopback, debugging only) |
+| `SURFBIRD_URL_ALLOWLIST` | — | comma-separated regexes — if set, only matching urls may be fetched |
+| `SURFBIRD_URL_BLOCKLIST` | — | comma-separated regexes — refuse matching urls (e.g. `169\.254\.\|,^http://localhost`) |
 | `ENGINE_READY_TIMEOUT_MS` | 120000 | startup wait for engine before proxy listens |
 | `SURFBIRD_MODE` | per target | `raw` / `auth` |
 
 `GET /health` is unauthenticated and returns 200 only when the engine answers — safe for LB probes. If either process dies, the container exits; use `--restart unless-stopped`.
+
+Bound to loopback above — reach a remote instance via SSH tunnel (`ssh -L 8080:127.0.0.1:8080 user@vps`) or a TLS reverse proxy. An exposed engine is a request-making machine on your VPS: token + firewall/TLS are the minimum, never expose `raw`.
 
 ## Building
 

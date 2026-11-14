@@ -2,25 +2,34 @@
 # Build context must contain:  kitesurf/  (built artifacts in tree)  proxy/  entrypoint.sh
 FROM node:22-bookworm-slim
 
+# default mirror preserves the China-VPS workflow this file was made for;
+# pass --build-arg NPM_REGISTRY=https://registry.npmjs.org on normal networks.
+ARG NPM_REGISTRY=https://registry.npmmirror.com
+
 ENV NODE_ENV=production
 # node slim ships no system CA bundle; workerd needs it for outbound HTTPS.
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
     && rm -rf /var/lib/apt/lists/*
-RUN npm install -g pnpm@9.15.4
+RUN npm install -g pnpm@9.15.4 --registry=${NPM_REGISTRY}
 
 # auth proxy
 WORKDIR /app/proxy
-COPY proxy/package.json ./
-RUN npm install --omit=dev --registry=https://registry.npmmirror.com
+COPY proxy/package.json proxy/package-lock.json ./
+RUN npm ci --omit=dev --registry=${NPM_REGISTRY}
 COPY proxy/ ./
 
 # engine tree (prebuilt artifacts included; node_modules excluded via .dockerignore)
 WORKDIR /app/kitesurf
 COPY kitesurf/ ./
-RUN pnpm install --frozen-lockfile --filter "@kitesurf/engine..." --registry=https://registry.npmmirror.com
+RUN pnpm install --frozen-lockfile --filter "@kitesurf/engine..." --registry=${NPM_REGISTRY}
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+# run unprivileged — the engine spends its life rendering hostile pages
+RUN chown -R node:node /app
+ENV HOME=/home/node
+USER node
 
 # health = raw probes engine /json/version, auth probes proxy /health
 HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=3 \

@@ -1,7 +1,10 @@
 node_modules/
+__pycache__/
 ctx/
 *.log
 .DS_Store
 docs/
+# patches are a local-only escape hatch — drop .patch files in to modify the
+# engine; they're deliberately not committed. Remove this ignore to version them.
 patches/*.patch
 !patches/.gitkeep

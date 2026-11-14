@@ -17,7 +17,7 @@ fullPage=false
 
 curl -sf -X POST "$BASE/screenshot" \
   "${auth[@]}" -H 'content-type: application/json' \
-  -d "{\"url\":\"$URL\",\"fullPage\":$fullPage,\"width\":1280,\"height\":720}" \
+  -d "$(jq -nc --arg url "$URL" --argjson fp "$fullPage" '{url:$url,fullPage:$fp,width:1280,height:720}')" \
   -o "$OUT"
 
 echo "$OUT ($(file -b "$OUT" | cut -d, -f1))"

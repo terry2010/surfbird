@@ -10,7 +10,7 @@ Surfbird exposes a small REST layer over a real browser engine. You only need `c
 ## Setup
 
 Environment (ask the user if unset):
-- `SURFBIRD_URL` — e.g. `http://<vps>:8080` (auth image) or `http://<vps>:8787` (raw)
+- `SURFBIRD_URL` — proxy base, e.g. `http://<vps>:8080`. The REST layer lives on the **auth image only** — a raw image's `:8787` is the bare engine (CDP + `/json/*` + `/rbi/*`) and has none of the endpoints below.
 - `SURFBIRD_TOKEN` — bearer token for auth images
 
 ## Endpoints
@@ -22,6 +22,7 @@ Environment (ask the user if unset):
 | `POST /screenshot` | `{"url","width"?,"fullPage"?}` | PNG bytes |
 | `POST /pdf` | `{"url","landscape"?}` | PDF bytes |
 | `POST /evaluate` | `{"url","script"}` | `{result}` — JS evaluated in page context |
+| `POST /batch` | `{"action","urls"[,"script"]}` | `[{url, ok, status, data|error}]` — one action over up to `MAX_BATCH_URLS` (20) urls, sequential |
 | `GET /health` | — | `ok` when engine is live (no auth needed) |
 
 ## Examples
@@ -47,5 +48,5 @@ curl -s -X POST "$SURFBIRD_URL/evaluate" \
 
 - Every request opens a fresh isolated page — no cookies/session carry over. For logged-in flows do the steps inside one `/evaluate` script.
 - Requests are rate-limited server-side (`MAX_CONCURRENT_ACTIONS`, default 2) — serialize bulk fetches or expect queuing, not errors.
-- Failures: `401` = bad/missing token, `502` = engine error (often TLS/network on the target site), `422` = Readability found no article (try `/content` and extract yourself).
+- Failures: `401` = bad/missing token, `502` = engine error (often TLS/network on the target site), `504` = action timed out, `413` = body over `MAX_BODY_BYTES`, `422` = Readability found no article (try `/content` and extract yourself).
 - Engine limits (upstream, not fixable here): no video decode, no file downloads, no touch gestures, JS engine is Boa not V8 — exotic sites may mis-render.

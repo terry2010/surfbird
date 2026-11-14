@@ -24,11 +24,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 RUN npm install -g pnpm@9.15.4 --registry=${NPM_REGISTRY}
 RUN curl -fsSL ${GH_PREFIX}https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-linux-amd64 \
-      -o /usr/local/bin/bazel && chmod +x /usr/local/bin/bazel
+      -o /usr/local/bin/bazel \
+    && curl -fsSL ${GH_PREFIX}https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-linux-amd64.sha256 \
+      -o /tmp/bazelisk.sha256 \
+    && echo "$(cut -d' ' -f1 /tmp/bazelisk.sha256)  /usr/local/bin/bazel" | sha256sum -c - \
+    && chmod +x /usr/local/bin/bazel
 
 WORKDIR /build
+# validate KITESURF_REF before it hits a shell-expanded git invocation —
+# a value containing spaces or a leading '-' would inject extra arguments.
 RUN git clone --depth 1 ${GH_PREFIX}https://github.com/cloudflare/kitesurf.git . \
-    && (git fetch --depth 1 origin ${KITESURF_REF} && git checkout FETCH_HEAD || git checkout ${KITESURF_REF})
+    && case "$KITESURF_REF" in \
+         *[!A-Za-z0-9._/-]*|-*|"") echo "invalid KITESURF_REF: $KITESURF_REF" >&2; exit 1 ;; \
+       esac \
+    && (git fetch --depth 1 origin "${KITESURF_REF}" && git checkout FETCH_HEAD || git checkout "${KITESURF_REF}") \
+    && git rev-parse HEAD
 
 # escape hatch: drop .patch files into patches/ to modify the engine.
 # a patch that doesn't apply must fail the build — never ship an unpatched engine silently.
@@ -38,7 +48,7 @@ RUN for p in patches/*.patch; do \
       echo "applying $p"; git apply --check "$p" && git apply "$p"; \
     done
 
-# optional China-network overrides — see docs/dev-plan.md "构建环境备忘".
+# optional China-network overrides — rewrite rules live in bazel-downloader.cfg.
 COPY bazel-downloader.cfg /build/bazel-downloader.cfg
 RUN if [ "$MIRRORS" = "1" ]; then \
       printf 'common --downloader_config=/build/bazel-downloader.cfg\n' > .bazelrc.user && \
@@ -66,8 +76,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app/proxy
-COPY proxy/package.json ./
-RUN npm install --omit=dev --registry=${NPM_REGISTRY}
+COPY proxy/package.json proxy/package-lock.json ./
+RUN npm ci --omit=dev --registry=${NPM_REGISTRY}
 COPY proxy/ ./
 
 WORKDIR /app/kitesurf
@@ -75,6 +85,12 @@ COPY --from=builder /out ./
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+# run unprivileged — the engine spends its life rendering hostile pages
+RUN chown -R node:node /app
+ENV HOME=/home/node
+USER node
+
 ENTRYPOINT ["/entrypoint.sh"]
 
 # ---------- targets ----------

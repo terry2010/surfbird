@@ -15,7 +15,10 @@ rm -rf "$CTX"; mkdir -p "$CTX/kitesurf"
 tar -C "$KITESURF_DIR" \
     --exclude='*/node_modules' --exclude='*/.git' --exclude='./bazel-*' \
     -cf - . | tar -C "$CTX/kitesurf" -xf -
-cp -r "$(dirname "$0")/../proxy" "$CTX/proxy"
+# only what the image needs — a local node_modules in proxy/ would clobber
+# the prod install inside the image (COPY proxy/ merges over it)
+mkdir -p "$CTX/proxy"
+cp "$(dirname "$0")"/../proxy/index.mjs "$(dirname "$0")"/../proxy/package*.json "$CTX/proxy/"
 cp "$(dirname "$0")/../entrypoint.sh" "$CTX/entrypoint.sh"
 cp "$(dirname "$0")/../Dockerfile.prebuilt" "$CTX/Dockerfile.prebuilt"
 cp "$(dirname "$0")/../Dockerfile.prebuilt.dockerignore" "$CTX/.dockerignore" 2>/dev/null || true
@@ -27,10 +30,10 @@ echo "== run =="
 docker rm -f surfbird-test 2>/dev/null || true
 if [ "$MODE" = "auth" ]; then
   TOKEN=$(openssl rand -hex 24)
-  docker run -d --name surfbird-test -p "$PORT:8080" -e SURFBIRD_TOKEN="$TOKEN" -e SURFBIRD_MODE=auth "surfbird:$MODE"
+  docker run -d --name surfbird-test -p "127.0.0.1:$PORT:8080" -e SURFBIRD_TOKEN="$TOKEN" -e SURFBIRD_MODE=auth "surfbird:$MODE"
   echo "TOKEN=$TOKEN"
 else
-  docker run -d --name surfbird-test -p "$EPORT:8787" -e SURFBIRD_MODE=raw "surfbird:$MODE"
+  docker run -d --name surfbird-test -p "127.0.0.1:$EPORT:8787" -e SURFBIRD_MODE=raw "surfbird:$MODE"
 fi
 
 echo "== waiting for engine =="

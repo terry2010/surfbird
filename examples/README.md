@@ -1,10 +1,10 @@
 # Examples
 
-Copy-paste clients for the Surfbird REST layer. Two env vars control everything:
+Copy-paste clients for the Surfbird REST layer (auth image only — `raw` exposes the bare engine, no REST). Two env vars control everything:
 
 ```bash
-export SURFBIRD_URL=http://<your-vps>:8080   # auth image port; raw uses :8787
-export SURFBIRD_TOKEN=<token>              # leave unset for raw image
+export SURFBIRD_URL=http://<your-vps>:8080   # auth image — the only one with REST
+export SURFBIRD_TOKEN=<token>               # required on auth images
 ```
 
 ## Python (`examples/python/`)

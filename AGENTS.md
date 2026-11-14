@@ -19,7 +19,7 @@ Unofficial self-hosted Docker distribution of Cloudflare Kitesurf. See README.md
 
 - **Never cut a release/tag/npm-publish without the user's explicit confirmation of version + changelog.**
 - Keep `KITESURF_REF` pinned to a commit/tag; never default to `main`.
-- Patches in `patches/` must apply cleanly (`git apply --check`); a failed patch fails the build.
+- Patches in `patches/` must apply cleanly (`git apply --check`); a failed patch fails the build. `patches/*.patch` is gitignored — patches are a local-only escape hatch, not for committing.
 - No auth bypasses: auth mode must fail closed when `SURFBIRD_TOKEN` is empty.
 - Engine has no `/health` route — probe `/json/version` instead.
 - Turndown runs in the proxy (Node), NOT in-page — Boa's DOM shim breaks it.

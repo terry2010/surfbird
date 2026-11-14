@@ -14,7 +14,7 @@ auth=()
 
 resp=$(curl -s -X POST "$BASE/content" \
   "${auth[@]}" -H 'content-type: application/json' \
-  -d "{\"url\":\"$URL\"}")
+  -d "$(jq -nc --arg url "$URL" '{url:$url}')")
 
 if [ -n "$OUT" ]; then
   printf '%s' "$resp" | jq -r '.html // .error.message' > "$OUT"

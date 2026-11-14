@@ -14,7 +14,7 @@ auth=()
 resp=$(curl -s -X POST "$BASE/markdown" \
   "${auth[@]}" -H 'content-type: application/json' \
   -w '\n%{http_code}' \
-  -d "{\"url\":\"$URL\"}")
+  -d "$(jq -nc --arg url "$URL" '{url:$url}')")
 code=${resp##*$'\n'}
 body=${resp%$'\n'*}
 

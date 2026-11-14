@@ -3,4 +3,5 @@ kitesurf/node_modules
 kitesurf/**/node_modules
 kitesurf/bazel-*
 kitesurf/.cache
+proxy/node_modules
 *.log

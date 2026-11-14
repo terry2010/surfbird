@@ -22,7 +22,7 @@ while IFS= read -r url; do
   slug=$(printf '%s' "$url" | sed 's|[^a-zA-Z0-9]|_|g' | cut -c1-80)
   if curl -sf -X POST "$BASE/markdown" \
       "${auth[@]}" -H 'content-type: application/json' \
-      -d "{\"url\":\"$url\"}" \
+      -d "$(jq -nc --arg url "$url" '{url:$url}')" \
     | jq -r '"# \(.title)\n\n" + .markdown' > "$OUTDIR/$slug.md" 2>/dev/null; then
     ok=$((ok+1)); echo "ok  $url"
   else
