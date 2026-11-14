@@ -164,7 +164,7 @@ async function restAction(action, body) {
         if (action === "screenshot") {
           await page.setViewport({ width: body.width || 1280, height: body.height || 720 });
         }
-        await page.goto(body.url, { timeout: REST_TIMEOUT, waitUntil: body.waitUntil || "load" });
+        const resp = await page.goto(body.url, { timeout: REST_TIMEOUT, waitUntil: body.waitUntil || "load" });
 
         if (action === "screenshot") {
           const png = await page.screenshot({ fullPage: !!body.fullPage, type: "png" });
@@ -180,6 +180,14 @@ async function restAction(action, body) {
             html: document.documentElement.outerHTML,
           }));
           return { status: 200, type: "application/json", body: JSON.stringify(data) };
+        }
+        if (action === "source") {
+          // original response body — what "view source" shows — vs the
+          // post-JS DOM /content returns. Backed by Network.getResponseBody;
+          // the engine drops bodies it didn't keep → empty string.
+          const raw = resp ? await resp.text() : "";
+          const meta = await page.evaluate(() => ({ title: document.title, url: location.href }));
+          return { status: 200, type: "application/json", body: JSON.stringify({ ...meta, html: raw }) };
         }
         if (action === "markdown") {
           // Readability in-page (article extraction), turndown in Node (HTML→md).
@@ -211,7 +219,7 @@ async function restAction(action, body) {
   }
 }
 
-const ACTIONS = new Set(["screenshot", "pdf", "content", "markdown", "evaluate"]);
+const ACTIONS = new Set(["screenshot", "pdf", "content", "source", "markdown", "evaluate"]);
 const MAX_BATCH = Number(process.env.MAX_BATCH_URLS || 20);
 
 // self-describing API surface for agents/codegen — unauthenticated, static JSON
@@ -223,9 +231,10 @@ const OPENAPI = {
     "/screenshot": { post: { summary: "render page → PNG", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url"], properties: { url: { type: "string" }, width: { type: "integer" }, height: { type: "integer" }, fullPage: { type: "boolean" } } } } } }, responses: { 200: { content: { "image/png": {} } } } } },
     "/pdf": { post: { summary: "render page → PDF", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url"], properties: { url: { type: "string" }, landscape: { type: "boolean" }, format: { type: "string" } } } } } }, responses: { 200: { content: { "application/pdf": {} } } } } },
     "/content": { post: { summary: "rendered DOM → {title,url,html}", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url"], properties: { url: { type: "string" } } } } } }, responses: { 200: { content: { "application/json": {} } } } } },
+    "/source": { post: { summary: "original response body — 'view source' HTML → {title,url,html} (vs /content's post-JS DOM)", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url"], properties: { url: { type: "string" } } } } } }, responses: { 200: { content: { "application/json": {} } } } } },
     "/markdown": { post: { summary: "article extraction → {title,markdown,...} (Readability+turndown); 422 when no article", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url"], properties: { url: { type: "string" } } } } } }, responses: { 200: { content: { "application/json": {} } }, 422: {} } } },
     "/evaluate": { post: { summary: "evaluate JS in page context → {result}", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url", "script"], properties: { url: { type: "string" }, script: { type: "string" } } } } } }, responses: { 200: { content: { "application/json": {} } } } } },
-    "/batch": { post: { summary: "run one action over many urls sequentially → [{url,ok,status,data|error}]", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["action", "urls"], properties: { action: { type: "string", enum: ["screenshot", "pdf", "content", "markdown", "evaluate"] }, urls: { type: "array", items: { type: "string" }, maxItems: MAX_BATCH }, script: { type: "string" } } } } } }, responses: { 200: { content: { "application/json": {} } } } } },
+    "/batch": { post: { summary: "run one action over many urls sequentially → [{url,ok,status,data|error}]", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["action", "urls"], properties: { action: { type: "string", enum: ["screenshot", "pdf", "content", "source", "markdown", "evaluate"] }, urls: { type: "array", items: { type: "string" }, maxItems: MAX_BATCH }, script: { type: "string" } } } } } }, responses: { 200: { content: { "application/json": {} } } } } },
   },
 };
 

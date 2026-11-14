@@ -49,6 +49,16 @@ server.tool(
 );
 
 server.tool(
+  "surf_source",
+  "Fetch a page and return {title, url, html} — the ORIGINAL response body, i.e. what 'view source' shows, before any JS runs. Use surf_content for the post-JS rendered DOM instead.",
+  urlShape,
+  async ({ url }) => {
+    try { return await jsonResult(sb.source(url)); }
+    catch (e) { return fail(e); }
+  },
+);
+
+server.tool(
   "surf_screenshot",
   "Render a page and return a PNG screenshot.",
   {
@@ -101,9 +111,9 @@ server.tool(
 
 server.tool(
   "surf_batch",
-  "Run one action over many urls in a single call — sequential server-side, failures don't abort the batch. Actions: markdown, content, evaluate. For RSS-digest / bulk-fetch workloads.",
+  "Run one action over many urls in a single call — sequential server-side, failures don't abort the batch. Actions: markdown, content, source, evaluate. For RSS-digest / bulk-fetch workloads.",
   {
-    action: z.enum(["markdown", "content", "evaluate"]).describe("REST action to apply to each url"),
+    action: z.enum(["markdown", "content", "source", "evaluate"]).describe("REST action to apply to each url"),
     urls: z.array(z.url()).min(1).max(20),
     script: z.string().optional().describe("required when action=evaluate"),
   },

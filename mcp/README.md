@@ -26,11 +26,12 @@ Exposes your own browser API as MCP tools — including **`surf_markdown` (artic
 | Tool | What it returns |
 |---|---|
 | `surf_markdown` | `{title, markdown, ...}` — article body via Readability+turndown |
-| `surf_content` | `{title, url, html}` — full rendered DOM |
+| `surf_content` | `{title, url, html}` — full rendered DOM (post-JS) |
+| `surf_source` | `{title, url, html}` — original response body ("view source", pre-JS) |
 | `surf_screenshot` | PNG image (viewport/full-page) |
 | `surf_pdf` | PDF resource (base64) |
 | `surf_evaluate` | result of JS evaluated in page context |
-| `surf_batch` | run markdown/content/evaluate over up to 20 urls in ONE call |
+| `surf_batch` | run markdown/content/source/evaluate over up to 20 urls in ONE call |
 | `surf_health` | engine liveness check |
 
 ## Env

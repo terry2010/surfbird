@@ -57,7 +57,7 @@ curl -H "Authorization: Bearer $TOKEN" \
      http://<host>:8080/markdown | jq -r .markdown
 ```
 
-Endpoints: `POST /screenshot | /pdf | /content | /markdown | /evaluate | /batch` (one action over up to `MAX_BATCH_URLS` urls, per-item results), `GET /health`, `GET /openapi.json`.
+Endpoints: `POST /screenshot | /pdf | /content | /source | /markdown | /evaluate | /batch` (one action over up to `MAX_BATCH_URLS` urls, per-item results), `GET /health`, `GET /openapi.json`. `/content` returns the post-JS rendered DOM; `/source` returns the original response body ("view source").
 All other paths transparently proxy to the engine (landing page, `/json/*`, `/rbi/*`).
 
 **JS/TS client:** [`surfbird`](https://www.npmjs.com/package/surfbird) on npm — `new Surfbird(url,{token}).markdown(u)` etc., plus `sb.batch(action, urls)`.
@@ -83,7 +83,7 @@ Two ways to plug Surfbird into an MCP-capable agent (Claude Code, Cursor, Windsu
 }
 ```
 
-Tools: `surf_markdown` `surf_content` `surf_screenshot` `surf_pdf` `surf_evaluate` `surf_batch` `surf_health`.
+Tools: `surf_markdown` `surf_content` `surf_source` `surf_screenshot` `surf_pdf` `surf_evaluate` `surf_batch` `surf_health`.
 
 **B. `chrome-devtools-mcp` — full CDP surface.** Points straight at the proxied WebSocket (`/devtools/browser` passes through with Bearer auth) — more tools, more moving parts. See upstream docs; if your client can't send custom WS headers, run a `raw` image on a private network instead.
 

@@ -68,6 +68,16 @@ mcode=$(curl -s -o /dev/null -w '%{http_code}' -m 120 -X POST "http://127.0.0.1:
 echo "   ${URLS[0]} → ${mcode} (expect 200 or 422)"
 [ "$mcode" = 200 ] || [ "$mcode" = 422 ] || { echo "FAIL: markdown pipeline broken"; docker logs "$NAME" 2>&1 | tail -20; exit 1; }
 
+# /source: original response body via Network.getResponseBody — must come back
+# as non-empty HTML (verifies the raw-response path, distinct from /content's DOM).
+echo "== source endpoint (/source on first URL)"
+sresp=$(curl -s -m 120 -X POST "http://127.0.0.1:${PORT}/source" \
+  -H "Authorization: Bearer ${TOKEN}" -H 'content-type: application/json' \
+  -d "$(jq -nc --arg u "${URLS[0]}" '{url:$u}')")
+slen=$(printf '%s' "$sresp" | python3 -c "import json,sys; print(len(json.load(sys.stdin).get('html','')))" 2>/dev/null || echo 0)
+echo "   source html length: ${slen}"
+[ "$slen" -gt 100 ] || { echo "FAIL: /source returned empty/short body"; printf '%s' "$sresp" | head -c 300; exit 1; }
+
 # /batch: one call over all urls → array with per-item ok flags
 echo "== batch endpoint (/batch content over all urls)"
 ujson=$(printf '%s\n' "${URLS[@]}" | jq -R . | jq -sc '{action:"content",urls:.}')

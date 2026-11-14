@@ -66,6 +66,11 @@ class Surfbird:
         data, _ = self._post("content", {"url": url})
         return json.loads(data)
 
+    def source(self, url: str) -> dict:
+        """→ {title, url, html} — original response body ("view source"), not the post-JS DOM."""
+        data, _ = self._post("source", {"url": url})
+        return json.loads(data)
+
     def screenshot(self, url: str, path: str, width: int = 1280, height: int = 720, full_page: bool = False) -> str:
         data, _ = self._post("screenshot", {"url": url, "width": width, "height": height, "fullPage": full_page})
         with open(path, "wb") as f:

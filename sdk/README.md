@@ -34,11 +34,12 @@ const results = await sb.batch("markdown", [url1, url2, url3]);
 | Method | Returns |
 |---|---|
 | `sb.markdown(url)` | `{title, byline, excerpt, url, markdown}` (throws `SurfbirdError` status 422 when no article) |
-| `sb.content(url)` | `{title, url, html}` |
+| `sb.content(url)` | `{title, url, html}` — post-JS DOM |
+| `sb.source(url)` | `{title, url, html}` — original response body ("view source") |
 | `sb.screenshot(url, {width, height, fullPage})` | PNG `Buffer` |
 | `sb.pdf(url, {landscape, format})` | PDF `Buffer` |
 | `sb.evaluate(url, script)` | JSON-serializable result |
-| `sb.batch(action, urls, {script?, timeout?})` | `[{url, ok, status, data\|error}]` (action: markdown/content/evaluate/screenshot/pdf; `script` required for evaluate) |
+| `sb.batch(action, urls, {script?, timeout?})` | `[{url, ok, status, data\|error}]` (action: markdown/content/source/evaluate/screenshot/pdf; `script` required for evaluate) |
 | `sb.health()` | `boolean` |
 | `sb.openapi()` | server's OpenAPI JSON |
 

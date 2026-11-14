@@ -13,7 +13,7 @@ Zero dependencies — stdlib only.
 
 | Script | What it does |
 |---|---|
-| `surfbird.py` | Importable client class (`Surfbird`) — markdown/content/screenshot/pdf/evaluate/health |
+| `surfbird.py` | Importable client class (`Surfbird`) — markdown/content/source/screenshot/pdf/evaluate/health |
 | `article_to_markdown.py` | `python article_to_markdown.py <url> out.md` |
 | `rss_to_markdown.py` | `python rss_to_markdown.py <feed-url> [N] digest.md` — feed → per-article markdown → combined digest (daily-news-report pattern) |
 | `batch_markdown.py` | `python batch_markdown.py [urls.txt] [digest.md]` — ONE `POST /batch` call for ≤20 urls, per-item failures don't abort |
@@ -36,6 +36,7 @@ Needs `curl` + `jq`.
 | `markdown.sh` | `./markdown.sh [url] [out.md]` — article → markdown |
 | `screenshot.sh` | `./screenshot.sh [url] [out.png] [full]` — PNG screenshot |
 | `content.sh` | `./content.sh [url] [out.html]` — rendered DOM `{title,url,html}` |
+| `source.sh` | `./source.sh [url] [out.html]` — "view source" HTML `{title,url,html}` |
 | `pdf.sh` | `./pdf.sh [url] [out.pdf] [landscape]` — page → PDF |
 | `evaluate.sh` | `./evaluate.sh [url] "document.title"` — JS in page context → `{result}` |
 | `batch-markdown.sh` | `cat urls.txt \| ./batch-markdown.sh ./out` — client-side loop; for ≤20 urls prefer `/batch` (see `batch_markdown.py`) |

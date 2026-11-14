@@ -75,6 +75,11 @@ export class Surfbird {
     return JSON.parse((await this.#post("content", { url, ...opts })).toString());
   }
 
+  /** Original response body ("view source" HTML) → {title, url, html}. */
+  async source(url, opts = {}) {
+    return JSON.parse((await this.#post("source", { url, ...opts })).toString());
+  }
+
   /** PNG screenshot → Buffer. opts: {width, height, fullPage} */
   async screenshot(url, opts = {}) {
     return this.#post("screenshot", { url, ...opts });

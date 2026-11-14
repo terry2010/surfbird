@@ -29,10 +29,10 @@
 ## Clients
 
 - [JS SDK](https://www.npmjs.com/package/surfbird): `npm i surfbird` —
-  `new Surfbird(url, {token})` → `.markdown(url) .screenshot(url) .pdf(url)
-  .content(url) .evaluate(url,script) .batch(action,urls,opts)`
+  `new Surfbird(url, {token})` → `.markdown(url) .content(url) .source(url)
+  .screenshot(url) .pdf(url) .evaluate(url,script) .batch(action,urls,opts)`
 - [MCP server](https://www.npmjs.com/package/surfbird-mcp):
-  `npx surfbird-mcp` — stdio tools `surf_markdown surf_content
+  `npx surfbird-mcp` — stdio tools `surf_markdown surf_content surf_source
   surf_screenshot surf_pdf surf_evaluate surf_batch`
 - [Python client](https://github.com/terry2010/surfbird/blob/main/examples/python/surfbird.py):
   stdlib-only, same method surface
@@ -42,7 +42,8 @@
 ## REST API (auth image only)
 
 - `POST /markdown` `{url,timeout?}` — article → markdown (Readability+Turndown)
-- `POST /content` `{url,timeout?}` — rendered HTML
+- `POST /content` `{url,timeout?}` — rendered DOM (post-JS)
+- `POST /source` `{url,timeout?}` — original response body ("view source", pre-JS)
 - `POST /screenshot` `{url,timeout?,width?,height?,fullPage?}` — PNG (base64)
 - `POST /pdf` `{url,timeout?,landscape?}` — PDF (base64)
 - `POST /evaluate` `{url,script,timeout?}` — run JS in page, return result
