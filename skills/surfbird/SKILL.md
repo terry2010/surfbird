@@ -19,7 +19,7 @@ Environment (ask the user if unset):
 |---|---|---|
 | `POST /markdown` | `{"url"}` | `{title, markdown, byline, excerpt}` — article body as markdown (Readability+turndown). **Prefer this for articles** |
 | `POST /content` | `{"url"}` | `{title, url, html}` — full rendered DOM (post-JS) |
-| `POST /source` | `{"url"}` | `{title, url, html}` — original response body ("view source", pre-JS) |
+| `POST /source` | `{"url"}` | `{title, url, html}` — "view source" HTML (original body, or same-origin re-fetch when the engine doesn't keep it) |
 | `POST /screenshot` | `{"url","width"?,"fullPage"?}` | PNG bytes |
 | `POST /pdf` | `{"url","landscape"?}` | PDF bytes |
 | `POST /evaluate` | `{"url","script"}` | `{result}` — JS evaluated in page context |
