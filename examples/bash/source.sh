@@ -4,7 +4,7 @@
 #   SURFBIRD_URL=... SURFBIRD_TOKEN=... ./source.sh
 set -euo pipefail
 
-URL="${1:-https://example.com}"
+URL="${1:-https://zhuikan.com/repos/terry2010__surfbird}"
 OUT="${2:-}"
 BASE="${SURFBIRD_URL:-http://127.0.0.1:8080}"
 TOKEN="${SURFBIRD_TOKEN:-}"
