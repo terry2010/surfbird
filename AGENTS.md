@@ -12,6 +12,7 @@ Unofficial self-hosted Docker distribution of Cloudflare Kitesurf. See README.md
 - `examples/` — python + bash clients
 - `scripts/ci-smoke.sh` — container smoke test (used by CI); `scripts/smoke-test.sh` — local prebuilt image test
 - `upstream-tag.txt` — last released upstream kitesurf tag (CI-managed)
+- `scripts/metrics.mjs` — daily npm/Docker Hub stats → `metrics/data.jsonl` + `dashboard.md` (both CI-managed)
 - `bazel-downloader.cfg` — optional China-mirror URL rewrites (`--build-arg MIRRORS=1`)
 - `docs/` is gitignored — local notes only, never commit it
 
@@ -29,4 +30,4 @@ Unofficial self-hosted Docker distribution of Cloudflare Kitesurf. See README.md
 
 - `bash -n` all shell scripts; `node --check` JS.
 - Full check: `bash scripts/ci-smoke.sh <image>` against a locally built image.
-- CI: `.github/workflows/release.yml` — daily upstream-tag watch → build → smoke → push.
+- CI: `.github/workflows/release.yml` — daily upstream-tag watch → build → smoke → push; `metrics.yml` — daily stats → commits `dashboard.md`.
