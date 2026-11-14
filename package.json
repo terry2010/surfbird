@@ -1,6 +1,6 @@
 {
   "name": "surfbird",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "type": "module",
   "description": "Unofficial self-hosted Docker distribution of Cloudflare Kitesurf. Includes surfbird-mcp bin (MCP tools over the REST layer).",

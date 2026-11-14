@@ -225,7 +225,7 @@ const MAX_BATCH = Number(process.env.MAX_BATCH_URLS || 20);
 // self-describing API surface for agents/codegen — unauthenticated, static JSON
 const OPENAPI = {
   openapi: "3.0.3",
-  info: { title: "Surfbird REST", version: "0.1.1", description: "REST over CDP for a self-hosted Kitesurf browser engine. Auth: Bearer token (auth images)." },
+  info: { title: "Surfbird REST", version: "0.1.2", description: "REST over CDP for a self-hosted Kitesurf browser engine. Auth: Bearer token (auth images)." },
   paths: {
     "/health": { get: { summary: "engine liveness (unauthenticated)", responses: { 200: {}, 503: {} } } },
     "/screenshot": { post: { summary: "render page → PNG", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url"], properties: { url: { type: "string" }, width: { type: "integer" }, height: { type: "integer" }, fullPage: { type: "boolean" } } } } } }, responses: { 200: { content: { "image/png": {} } } } } },
