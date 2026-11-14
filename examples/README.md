@@ -15,6 +15,7 @@ Zero dependencies — stdlib only.
 |---|---|
 | `surfbird.py` | Importable client class (`Surfbird`) — markdown/content/source/screenshot/pdf/evaluate/health |
 | `article_to_markdown.py` | `python article_to_markdown.py <url> out.md` |
+| `source.py` | `python source.py <url> out.html` — "view source" HTML (original response, pre-JS) |
 | `rss_to_markdown.py` | `python rss_to_markdown.py <feed-url> [N] digest.md` — feed → per-article markdown → combined digest (daily-news-report pattern) |
 | `batch_markdown.py` | `python batch_markdown.py [urls.txt] [digest.md]` — ONE `POST /batch` call for ≤20 urls, per-item failures don't abort |
 
