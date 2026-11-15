@@ -38,6 +38,9 @@
   stdlib-only, same method surface
 - [Bash examples](https://github.com/terry2010/surfbird/tree/main/examples/bash):
   curl one-liners per endpoint
+- [dsh-control-surfbird-for-kitesurf](https://github.com/terry2010/dsh-control-surfbird-for-kitesurf):
+  DSH plugin for interactive CDP control (`surfbird_*` tools) — OpenCode/Pi
+  versions in progress
 
 ## REST API (auth image only)
 
@@ -48,9 +51,25 @@
 - `POST /pdf` `{url,timeout?,landscape?}` — PDF (base64)
 - `POST /evaluate` `{url,script,timeout?}` — run JS in page, return result
 - `POST /batch` `{action,urls[],script?,timeout?}` — up to MAX_BATCH_URLS
-- `GET /health` — liveness (no auth). `GET /openapi.json` — spec.
+- `GET /health` — liveness + `cdpEndpoint` (no auth). `GET /openapi.json` — spec.
 - Errors: 401 unauthorized, 400 invalid_input, 403 url_blocked,
   413 payload_too_large, 429 busy, 504 action_timeout, 502 bad_gateway
+
+## CDP (interactive control — both images)
+
+REST actions are one-shot (fresh page per call). For persistent tabs,
+click/type, screenshots and console/network inspection, speak CDP
+directly over WebSocket:
+
+- Endpoint: `ws(s)://<host>/devtools/browser` — raw image `:8787` direct,
+  auth image `:8080` via proxy with `Authorization: Bearer $SURFBIRD_TOKEN`
+  on the upgrade. `GET /health` returns `cdpEndpoint` for discovery.
+- One WebSocket = one isolated browser; `Target.*` manages tabs inside it.
+  Closing the socket destroys all tabs — no cross-connection state.
+- Session caps: ~10 min idle disconnect (any CDP message resets), 60 min
+  hard limit per connection.
+- Engine limits (upstream): no JS dialogs, file upload/download, clipboard,
+  touch/drag; Boa not V8; partial hit-testing.
 
 ## Env vars
 

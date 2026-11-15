@@ -234,7 +234,7 @@ const OPENAPI = {
   openapi: "3.0.3",
   info: { title: "Surfbird REST", version: "0.1.2", description: "REST over CDP for a self-hosted Kitesurf browser engine. Auth: Bearer token (auth images)." },
   paths: {
-    "/health": { get: { summary: "engine liveness (unauthenticated)", responses: { 200: {}, 503: {} } } },
+    "/health": { get: { summary: "engine liveness + cdpEndpoint (unauthenticated)", responses: { 200: { content: { "application/json": { schema: { type: "object", properties: { status: { type: "string" }, engine: { type: "string" }, cdpEndpoint: { type: "string" } } } } } }, 503: {} } } },
     "/screenshot": { post: { summary: "render page → PNG", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url"], properties: { url: { type: "string" }, width: { type: "integer" }, height: { type: "integer" }, fullPage: { type: "boolean" } } } } } }, responses: { 200: { content: { "image/png": {} } } } } },
     "/pdf": { post: { summary: "render page → PDF", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url"], properties: { url: { type: "string" }, landscape: { type: "boolean" }, format: { type: "string" } } } } } }, responses: { 200: { content: { "application/pdf": {} } } } } },
     "/content": { post: { summary: "rendered DOM → {title,url,html}", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["url"], properties: { url: { type: "string" } } } } } }, responses: { 200: { content: { "application/json": {} } } } } },
@@ -259,11 +259,21 @@ const handler = (req, res) => {
 const handle = async (req, res) => {
   const url = new URL(req.url, "http://x");
 
-  // unauthenticated liveness: ok only when the engine is actually up
+  // unauthenticated liveness: ok only when the engine is actually up.
+  // JSON body carries cdpEndpoint so clients can self-discover the CDP
+  // WebSocket URL (same Host-header scheme the engine uses for
+  // webSocketDebuggerUrl). All in-repo consumers check status only.
   if (req.method === "GET" && url.pathname === "/health") {
     const ok = await engineOk();
-    res.writeHead(ok ? 200 : 503, { "content-type": "text/plain" });
-    return res.end(ok ? "ok" : "engine not ready");
+    res.writeHead(ok ? 200 : 503, { "content-type": "application/json" });
+    if (!ok) return res.end(JSON.stringify({ status: "engine_not_ready" }));
+    const host = req.headers.host || `127.0.0.1:${PORT}`;
+    const scheme = req.socket.encrypted ? "wss" : "ws";
+    return res.end(JSON.stringify({
+      status: "ok",
+      engine: "kitesurf",
+      cdpEndpoint: `${scheme}://${host}/devtools/browser`,
+    }));
   }
 
   if (req.method === "GET" && url.pathname === "/openapi.json") {
