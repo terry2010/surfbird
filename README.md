@@ -97,8 +97,9 @@ Purpose-built plugins that drive a Surfbird (or upstream Kitesurf) endpoint over
 
 - **[dsh-control-surfbird-for-kitesurf](https://github.com/terry2010/dsh-control-surfbird-for-kitesurf)** — for [DSH](https://www.deepseek.com/) agents; settings UI, encrypted token file, install via `dsh plugin install dsh-control-surfbird-for-kitesurf`
 - **[opencode-control-surfbird-for-kitesurf](https://github.com/terry2010/opencode-control-surfbird-for-kitesurf)** — for [OpenCode](https://opencode.ai/) (desktop app + TUI, with a built-in settings page/dialog); install via `opencode plugin add opencode-control-surfbird-for-kitesurf`
+- **[pi-control-surfbird-for-kitesurf](https://github.com/terry2010/pi-control-surfbird-for-kitesurf)** — for the [Pi](https://pi.dev/) coding agent; settings via `/surfbird-settings`, install via `pi install pi-control-surfbird-for-kitesurf`
 
-Both share the same host-independent CDP core and work against the `auth` image (Bearer token) or `raw` image (loopback/private networks only).
+All three share the same host-independent CDP core and work against the `auth` image (Bearer token) or `raw` image (loopback/private networks only).
 
 ## Examples
 

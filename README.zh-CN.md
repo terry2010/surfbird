@@ -97,8 +97,9 @@ curl -H "Authorization: Bearer $TOKEN" \
 
 - **[dsh-control-surfbird-for-kitesurf](https://github.com/terry2010/dsh-control-surfbird-for-kitesurf)** —— 面向 [DSH](https://www.deepseek.com/) agent；带设置界面、加密 token 文件，`dsh plugin install dsh-control-surfbird-for-kitesurf` 安装
 - **[opencode-control-surfbird-for-kitesurf](https://github.com/terry2010/opencode-control-surfbird-for-kitesurf)** —— 面向 [OpenCode](https://opencode.ai/)（桌面应用 + TUI，内置设置页/弹窗）；`opencode plugin add opencode-control-surfbird-for-kitesurf` 安装
+- **[pi-control-surfbird-for-kitesurf](https://github.com/terry2010/pi-control-surfbird-for-kitesurf)** —— 面向 [Pi](https://pi.dev/) coding agent；`/surfbird-settings` 命令配置，`pi install pi-control-surfbird-for-kitesurf` 安装
 
-两者共享同一套 host 无关的 CDP 核心，`auth` 镜像（Bearer token）和 `raw` 镜像（仅限回环/私网）都能用。
+三者共享同一套 host 无关的 CDP 核心，`auth` 镜像（Bearer token）和 `raw` 镜像（仅限回环/私网）都能用。
 
 ## 示例
 
