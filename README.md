@@ -6,6 +6,8 @@
 <a href="https://hub.docker.com/r/terry2010/surfbird"><img src="https://img.shields.io/badge/docker-terry2010%2Fsurfbird-2496ED.svg" alt="Docker Hub"></a>
 </p>
 
+**English** | [中文](README.zh-CN.md)
+
 **Kitesurf, self-hosted.** An unofficial Docker distribution of [Cloudflare Kitesurf](https://github.com/cloudflare/kitesurf) — the experimental browser engine built for AI agents.
 
 > Not affiliated with or endorsed by Cloudflare. Kitesurf is Apache-2.0 licensed.
@@ -88,6 +90,15 @@ Tools: `surf_markdown` `surf_content` `surf_source` `surf_screenshot` `surf_pdf`
 **B. `chrome-devtools-mcp` — full CDP surface.** Points straight at the proxied WebSocket (`/devtools/browser` passes through with Bearer auth) — more tools, more moving parts. See upstream docs; if your client can't send custom WS headers, run a `raw` image on a private network instead.
 
 **No MCP at all?** The REST layer is agent-friendly on its own — [`skills/surfbird/SKILL.md`](skills/surfbird/SKILL.md) is a drop-in skill that teaches any agent to drive it with `curl`.
+
+## Agent plugins
+
+Purpose-built plugins that drive a Surfbird (or upstream Kitesurf) endpoint over CDP "like a person" — 28 `surfbird_*` tools each: tab management, navigation, semantic snapshots with element refs, click/fill/type, waits, JS evaluation, screenshots/PDF, console & network inspection, and WebMCP. Every agent session owns an isolated browser.
+
+- **[dsh-control-surfbird-for-kitesurf](https://github.com/terry2010/dsh-control-surfbird-for-kitesurf)** — for [DSH](https://www.deepseek.com/) agents; settings UI, encrypted token file, install via `dsh plugin install dsh-control-surfbird-for-kitesurf`
+- **[opencode-control-surfbird-for-kitesurf](https://github.com/terry2010/opencode-control-surfbird-for-kitesurf)** — for [OpenCode](https://opencode.ai/) (desktop app + TUI, with a built-in settings page/dialog); install via `opencode plugin add opencode-control-surfbird-for-kitesurf`
+
+Both share the same host-independent CDP core and work against the `auth` image (Bearer token) or `raw` image (loopback/private networks only).
 
 ## Examples
 
