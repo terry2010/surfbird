@@ -26,7 +26,9 @@ const fail = (e) => ({ isError: true, content: [{ type: "text", text: String(e?.
 
 const urlShape = { url: z.url().describe("page URL to visit") };
 
-const server = new McpServer({ name: "surfbird", version: "0.1.0" });
+// version 与 mcp/package.json 保持一致（发布前手动同步——server.mjs 单文件发布，
+// 运行期读不到 package.json）
+const server = new McpServer({ name: "surfbird", version: "0.1.2" });
 
 server.tool(
   "surf_markdown",

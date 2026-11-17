@@ -23,6 +23,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       git ca-certificates curl build-essential python3 unzip zip \
     && rm -rf /var/lib/apt/lists/*
 RUN npm install -g pnpm@9.15.4 --registry=${NPM_REGISTRY}
+# NOTE: images are linux/amd64 only — bazelisk binary is hardcoded amd64 and CI
+# builds on an amd64 runner. Arm hosts run via emulation (slow) or not at all.
 RUN curl -fsSL ${GH_PREFIX}https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-linux-amd64 \
       -o /usr/local/bin/bazel \
     && curl -fsSL ${GH_PREFIX}https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-linux-amd64.sha256 \
@@ -59,7 +61,9 @@ RUN if [ "$MIRRORS" = "1" ]; then \
     if [ -n "$BAZEL_JOBS" ]; then echo "build --jobs=$BAZEL_JOBS" >> .bazelrc.user; fi
 
 RUN pnpm config set registry ${NPM_REGISTRY} && pnpm install --frozen-lockfile
-ARG BAZELISK_BASE_URL=https://github.com/bazelbuild/bazel/releases/download
+# bazelisk downloads bazel itself from here — honor GH_PREFIX like every other
+# github fetch so MIRRORS=1 builds behind a mirror prefix don't stall on it.
+ARG BAZELISK_BASE_URL=${GH_PREFIX}https://github.com/bazelbuild/bazel/releases/download
 ENV BAZELISK_BASE_URL=${BAZELISK_BASE_URL}
 RUN pnpm run build
 

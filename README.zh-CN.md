@@ -22,7 +22,7 @@ Kitesurf 解析 HTML、应用 CSS、执行页面 JavaScript 并渲染截图—�
 | `terry2010/surfbird:auth` | 引擎 + token 认证代理 + 可选 TLS，`:8080` | 一条命令即可对外 |
 | `terry2010/surfbird:latest` | = `:auth` | 方便的默认值 |
 
-上游每发一个新 tag，镜像每天自动构建；也发布按 tag 固定的版本，如 `terry2010/surfbird:auth-2026.11.8`。
+上游每发一个新 tag，镜像每天自动构建；也发布按 tag 固定的版本，如 `terry2010/surfbird:auth-2026.11.8`。**架构：仅 `linux/amd64`**（引擎用 Bazel 针对 amd64 构建）——ARM 主机需 qemu 模拟（慢）或用[预构建方式](#构建)自行出原生镜像。
 
 ## 快速开始
 

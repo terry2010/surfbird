@@ -103,10 +103,19 @@ const parseBody = async (req) => {
 // endpoints or intranet ranges. BLOCK always wins over ALLOW.
 // Note: regexes match the URL string, not the resolved IP — this is a
 // convenience fence for a single-tenant box, not an anti-SSRF fortress.
-const toRegexList = (v) =>
-  (v || "").split(",").map((s) => s.trim()).filter(Boolean).map((s) => new RegExp(s));
-const URL_ALLOW = toRegexList(process.env.SURFBIRD_URL_ALLOWLIST);
-const URL_BLOCK = toRegexList(process.env.SURFBIRD_URL_BLOCKLIST);
+const toRegexList = (envName) => {
+  const v = process.env[envName] || "";
+  return v.split(",").map((s) => s.trim()).filter(Boolean).map((s) => {
+    try {
+      return new RegExp(s);
+    } catch (e) {
+      // 启动即失败，但报错要说清是哪个环境变量的哪一段——裸 stack 没法排障
+      throw new Error(`${envName}: invalid regex "${s}": ${e.message}`);
+    }
+  });
+};
+const URL_ALLOW = toRegexList("SURFBIRD_URL_ALLOWLIST");
+const URL_BLOCK = toRegexList("SURFBIRD_URL_BLOCKLIST");
 const urlAllowed = (u) => {
   try {
     const p = new URL(u);
