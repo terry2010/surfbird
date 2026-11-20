@@ -1,26 +1,27 @@
 # Surfbird Metrics Dashboard
 
-_Last updated: 2026-11-19 13:41 UTC ·
+_Last updated: 2026-11-20 13:24 UTC ·
 regenerated daily by [`metrics.yml`](.github/workflows/metrics.yml)_
 
 ## npm downloads
 
 | package | last 24h | last 7d | last 30d | total |
 |---|---:|---:|---:|---:|
-| [surfbird](https://www.npmjs.com/package/surfbird) | 8 | 737 | 737 | 737 |
-| [surfbird-mcp](https://www.npmjs.com/package/surfbird-mcp) | 10 | 763 | 763 | 763 |
+| [surfbird](https://www.npmjs.com/package/surfbird) | 6 | 743 | 743 | 743 |
+| [surfbird-mcp](https://www.npmjs.com/package/surfbird-mcp) | 9 | 772 | 772 | 772 |
 
 ## Docker Hub — [terry2010/surfbird](https://hub.docker.com/r/terry2010/surfbird)
 
-| metric | value | Δ since 2026-11-18 |
+| metric | value | Δ since 2026-11-19 |
 |---|---:|---:|
-| pulls | 767 | +76 |
+| pulls | 875 | +108 |
 | stars | 0 | +0 |
 
 ## Daily history (last 30 entries)
 
 | date | surfbird dl | surfbird-mcp dl | docker pulls | Δ pulls | docker stars |
 |---|---:|---:|---:|---:|---:|
+| 2026-11-20 | 6 | 9 | 875 | +108 | 0 |
 | 2026-11-19 | 8 | 10 | 767 | +76 | 0 |
 | 2026-11-18 | 15 | 18 | 691 | +4 | 0 |
 | 2026-11-17 | 19 | 23 | 687 | +12 | 0 |
