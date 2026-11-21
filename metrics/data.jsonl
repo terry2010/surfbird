@@ -5,3 +5,4 @@
 {"date":"2026-11-18","npm":{"surfbird":{"daily":15,"weekly":729,"monthly":729,"total":729},"surfbird-mcp":{"daily":18,"weekly":753,"monthly":753,"total":753}},"docker":{"pulls":691,"stars":0}}
 {"date":"2026-11-19","npm":{"surfbird":{"daily":8,"weekly":737,"monthly":737,"total":737},"surfbird-mcp":{"daily":10,"weekly":763,"monthly":763,"total":763}},"docker":{"pulls":767,"stars":0}}
 {"date":"2026-11-20","npm":{"surfbird":{"daily":6,"weekly":743,"monthly":743,"total":743},"surfbird-mcp":{"daily":9,"weekly":772,"monthly":772,"total":772}},"docker":{"pulls":875,"stars":0}}
+{"date":"2026-11-21","npm":{"surfbird":{"daily":10,"weekly":486,"monthly":753,"total":753},"surfbird-mcp":{"daily":18,"weekly":514,"monthly":790,"total":790}},"docker":{"pulls":914,"stars":0}}
