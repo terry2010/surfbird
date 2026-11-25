@@ -1,10 +1,10 @@
 # Surfbird
 
-<p>
-<a href="https://github.com/terry2010/surfbird/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License"></a> <a href="https://github.com/terry2010/surfbird/actions/workflows/release.yml"><img src="https://github.com/terry2010/surfbird/actions/workflows/release.yml/badge.svg" alt="release"></a> <a href="https://hub.docker.com/r/terry2010/surfbird"><img src="https://img.shields.io/badge/docker-terry2010%2Fsurfbird-2496ED.svg" alt="Docker Hub"></a> <a href="https://github.com/terry2010/surfbird"><img src="https://img.shields.io/badge/github-terry2010%2Fsurfbird-181717.svg?logo=github" alt="GitHub"></a>
-</p>
+<!-- table row keeps badges inline where the renderer's CSS sets img{display:block} (e.g. hub.docker.com) -->
+| <a href="https://github.com/terry2010/surfbird/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License"></a> | <a href="https://github.com/terry2010/surfbird/actions/workflows/release.yml"><img src="https://github.com/terry2010/surfbird/actions/workflows/release.yml/badge.svg" alt="release"></a> | <a href="https://hub.docker.com/r/terry2010/surfbird"><img src="https://img.shields.io/badge/docker-terry2010%2Fsurfbird-2496ED.svg" alt="Docker Hub"></a> | <a href="https://github.com/terry2010/surfbird"><img src="https://img.shields.io/badge/github-terry2010%2Fsurfbird-181717.svg?logo=github" alt="GitHub"></a> |
+|---|---|---|---|
 
-[English](https://github.com/terry2010/surfbird/blob/main/README.md) | **中文** | [GitHub](https://github.com/terry2010/surfbird)
+[English](https://github.com/terry2010/surfbird/blob/main/README.md) | **中文** | [github.com/terry2010/surfbird](https://github.com/terry2010/surfbird)
 
 **Kitesurf，自托管。** [Cloudflare Kitesurf](https://github.com/cloudflare/kitesurf) 的非官方 Docker 发行版——一个为 AI agent 而生的实验性浏览器引擎。
 
