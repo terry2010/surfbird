@@ -1,12 +1,13 @@
 # Surfbird
 
 <p>
-<a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License"></a>
+<a href="https://github.com/terry2010/surfbird/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License"></a>
 <a href="https://github.com/terry2010/surfbird/actions/workflows/release.yml"><img src="https://github.com/terry2010/surfbird/actions/workflows/release.yml/badge.svg" alt="release"></a>
 <a href="https://hub.docker.com/r/terry2010/surfbird"><img src="https://img.shields.io/badge/docker-terry2010%2Fsurfbird-2496ED.svg" alt="Docker Hub"></a>
+<a href="https://github.com/terry2010/surfbird"><img src="https://img.shields.io/badge/github-terry2010%2Fsurfbird-181717.svg?logo=github" alt="GitHub"></a>
 </p>
 
-[English](README.md) | **中文**
+[English](https://github.com/terry2010/surfbird/blob/main/README.md) | **中文** | [GitHub](https://github.com/terry2010/surfbird)
 
 **Kitesurf，自托管。** [Cloudflare Kitesurf](https://github.com/cloudflare/kitesurf) 的非官方 Docker 发行版——一个为 AI agent 而生的实验性浏览器引擎。
 
@@ -59,7 +60,7 @@ curl -H "Authorization: Bearer $TOKEN" \
      http://<host>:8080/markdown | jq -r .markdown
 ```
 
-端点：`POST /screenshot | /pdf | /content | /source | /markdown | /evaluate | /batch`（一个 action 作用于最多 `MAX_BATCH_URLS` 个 url，逐项返回结果）、`GET /health`、`GET /openapi.json`。`/content` 返回 JS 执行后的渲染 DOM；`/source` 返回原始响应体（即"查看源码"）。
+端点：`POST /screenshot | /pdf | /content | /source | /markdown | /evaluate | /batch`（一个 action 作用于最多 `MAX_BATCH_URLS` 个 url，逐项返回结果）、`GET /health`、`GET /openapi.json`。`/content` 返回 JS 执行后的渲染 DOM；`/source` 返回原始响应体（即"查看源码"）。所有 POST body 还接受 `waitUntil`（页面加载策略，默认 `load`）。
 其余路径全部透明代理到引擎（落地页、`/json/*`、`/rbi/*`）。
 
 **JS/TS 客户端：** npm 上的 [`surfbird`](https://www.npmjs.com/package/surfbird)——`new Surfbird(url,{token}).markdown(u)` 等，外加 `sb.batch(action, urls)`。
@@ -89,7 +90,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 
 **B. `chrome-devtools-mcp` —— 完整 CDP 面。** 直连代理后的 WebSocket（`/devtools/browser` 带 Bearer 认证透传）——工具更多，部件也更多。见上游文档；如果你的客户端不能发自定义 WS 头，就在私网里跑 `raw` 镜像。
 
-**不用 MCP 也行。** REST 层本身对 agent 就很友好——[`skills/surfbird/SKILL.md`](skills/surfbird/SKILL.md) 是一份即插即用的 skill，教任何 agent 用 `curl` 驱动它。
+**不用 MCP 也行。** REST 层本身对 agent 就很友好——[`skills/surfbird/SKILL.md`](https://github.com/terry2010/surfbird/blob/main/skills/surfbird/SKILL.md) 是一份即插即用的 skill，教任何 agent 用 `curl` 驱动它。
 
 ## Agent 插件
 
@@ -103,7 +104,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 
 ## 示例
 
-[`examples/`](examples/) —— 零依赖 Python 客户端（`rss_to_markdown.py` 把 RSS 源做成 markdown 摘要，供 LLM 日报使用）以及 bash/curl 脚本。
+[`examples/`](https://github.com/terry2010/surfbird/tree/main/examples) —— 零依赖 Python 客户端（`rss_to_markdown.py` 把 RSS 源做成 markdown 摘要，供 LLM 日报使用）以及 bash/curl 脚本。
 
 ## 环境变量
 
@@ -119,6 +120,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 | `SURFBIRD_INSPECTOR` | — | `1` 在 :9229 打开 workerd 调试 inspector（仅回环，调试用） |
 | `SURFBIRD_URL_ALLOWLIST` | — | 逗号分隔的正则——设置后只允许匹配的 url |
 | `SURFBIRD_URL_BLOCKLIST` | — | 逗号分隔的正则——拒绝匹配的 url（如 `169\.254\.\|,^http://localhost`） |
+| `ENGINE_HOST` / `ENGINE_PORT` | `127.0.0.1` / `8787` | 代理要连接的引擎地址（auth 镜像——容器内默认值无需改动） |
 | `ENGINE_READY_TIMEOUT_MS` | 120000 | 代理开始监听前等待引擎就绪的时长 |
 | `SURFBIRD_MODE` | 随 target | `raw` / `auth` |
 

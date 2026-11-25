@@ -20,11 +20,13 @@ Environment (ask the user if unset):
 | `POST /markdown` | `{"url"}` | `{title, markdown, byline, excerpt}` — article body as markdown (Readability+turndown). **Prefer this for articles** |
 | `POST /content` | `{"url"}` | `{title, url, html}` — full rendered DOM (post-JS) |
 | `POST /source` | `{"url"}` | `{title, url, html}` — "view source" HTML (original body, or same-origin re-fetch when the engine doesn't keep it) |
-| `POST /screenshot` | `{"url","width"?,"fullPage"?}` | PNG bytes |
-| `POST /pdf` | `{"url","landscape"?}` | PDF bytes |
+| `POST /screenshot` | `{"url","width"?,"height"?,"fullPage"?}` | PNG bytes |
+| `POST /pdf` | `{"url","landscape"?,"format"?}` | PDF bytes |
 | `POST /evaluate` | `{"url","script"}` | `{result}` — JS evaluated in page context |
 | `POST /batch` | `{"action","urls"[,"script"]}` | `[{url, ok, status, data|error}]` — one action over up to `MAX_BATCH_URLS` (20) urls, sequential |
 | `GET /health` | — | `{status, engine, cdpEndpoint}` — liveness + CDP WebSocket URL (no auth needed) |
+
+Every POST body also accepts `"waitUntil"` (page-load strategy, default `"load"`).
 
 ## Examples
 

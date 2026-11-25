@@ -44,16 +44,18 @@
 
 ## REST API (auth image only)
 
-- `POST /markdown` `{url,timeout?}` — article → markdown (Readability+Turndown)
-- `POST /content` `{url,timeout?}` — rendered DOM (post-JS)
-- `POST /source` `{url,timeout?}` — original response body ("view source", pre-JS)
-- `POST /screenshot` `{url,timeout?,width?,height?,fullPage?}` — PNG (base64)
-- `POST /pdf` `{url,timeout?,landscape?}` — PDF (base64)
-- `POST /evaluate` `{url,script,timeout?}` — run JS in page, return result
-- `POST /batch` `{action,urls[],script?,timeout?}` — up to MAX_BATCH_URLS
+- `POST /markdown` `{url,waitUntil?}` — article → markdown (Readability+Turndown)
+- `POST /content` `{url,waitUntil?}` — rendered DOM (post-JS)
+- `POST /source` `{url,waitUntil?}` — original response body ("view source", pre-JS)
+- `POST /screenshot` `{url,waitUntil?,width?,height?,fullPage?}` — binary PNG body
+- `POST /pdf` `{url,waitUntil?,landscape?,format?}` — binary PDF body
+- `POST /evaluate` `{url,script,waitUntil?}` — run JS in page, return result
+- `POST /batch` `{action,urls[],script?,waitUntil?}` — up to MAX_BATCH_URLS;
+  binary actions come back as base64 entries (`data`, `encoding`, `contentType`)
 - `GET /health` — liveness + `cdpEndpoint` (no auth). `GET /openapi.json` — spec.
-- Errors: 401 unauthorized, 400 invalid_input, 403 url_blocked,
-  413 payload_too_large, 429 busy, 504 action_timeout, 502 bad_gateway
+- Errors: 401 unauthorized, 400 bad_request, 403 url_blocked,
+  413 payload_too_large, 422 no_article, 502/504 engine_error.
+  Concurrency overflow queues instead of erroring — no 429.
 
 ## CDP (interactive control — both images)
 

@@ -89,6 +89,8 @@ jobs:
             docker buildx build \
               --target "$t" \
               --build-arg KITESURF_REF="$TAG" \
+              --label "org.opencontainers.image.version=$TAG" \
+              --label "org.opencontainers.image.revision=$(git rev-parse HEAD)" \
               --cache-from "type=gha,scope=$t" \
               --cache-to "type=gha,mode=max,scope=$t" \
               --load -t "${IMAGE}:$t" -t "${IMAGE}:$t-$TAG" .
@@ -125,7 +127,8 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: ${{ env.IMAGE }}
-          short-description: "Unofficial self-hosted Kitesurf headless browser for AI agents: markdown, screenshots, PDF, CDP"
+          short-description: "Unofficial self-hosted Cloudflare Kitesurf headless browser for AI agents: markdown, PDF, CDP"
+          enable-url-completion: true
 
       - name: Record released upstream tag
         run: |

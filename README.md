@@ -1,10 +1,13 @@
 # Surfbird
 
 <p>
-<a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License"></a>
+<a href="https://github.com/terry2010/surfbird/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License"></a>
 <a href="https://github.com/terry2010/surfbird/actions/workflows/release.yml"><img src="https://github.com/terry2010/surfbird/actions/workflows/release.yml/badge.svg" alt="release"></a>
 <a href="https://hub.docker.com/r/terry2010/surfbird"><img src="https://img.shields.io/badge/docker-terry2010%2Fsurfbird-2496ED.svg" alt="Docker Hub"></a>
+<a href="https://github.com/terry2010/surfbird"><img src="https://img.shields.io/badge/github-terry2010%2Fsurfbird-181717.svg?logo=github" alt="GitHub"></a>
 </p>
+
+**English** | [中文](https://github.com/terry2010/surfbird/blob/main/README.zh-CN.md) | [GitHub](https://github.com/terry2010/surfbird)
 
 **Kitesurf, self-hosted.** An unofficial Docker distribution of [Cloudflare Kitesurf](https://github.com/cloudflare/kitesurf) — the experimental browser engine built for AI agents.
 
@@ -20,7 +23,7 @@ Kitesurf parses HTML, applies CSS, runs page JavaScript and renders screenshots 
 | `terry2010/surfbird:auth` | engine + token auth proxy + optional TLS, `:8080` | one-command, exposed |
 | `terry2010/surfbird:latest` | = `:auth` | convenience default |
 
-Images auto-build daily when upstream cuts a new tag; per-tag pins like `terry2010/surfbird:auth-2026.11.8` are also published. **Arch: `linux/amd64` only** (the engine is built with Bazel for amd64) — ARM hosts need qemu emulation (slow) or a native build via [Dockerfile.prebuilt](#building).
+Images auto-build daily when upstream cuts a new tag; per-tag pins like `terry2010/surfbird:auth-2026.11.8` are also published. **Arch: `linux/amd64` only** (the engine is built with Bazel for amd64) — ARM hosts need qemu emulation (slow) or a native build via [Dockerfile.prebuilt](https://github.com/terry2010/surfbird/blob/main/Dockerfile.prebuilt).
 
 ## Quick start
 
@@ -57,7 +60,7 @@ curl -H "Authorization: Bearer $TOKEN" \
      http://<host>:8080/markdown | jq -r .markdown
 ```
 
-Endpoints: `POST /screenshot | /pdf | /content | /source | /markdown | /evaluate | /batch` (one action over up to `MAX_BATCH_URLS` urls, per-item results), `GET /health`, `GET /openapi.json`. `/content` returns the post-JS rendered DOM; `/source` returns the original response body ("view source").
+Endpoints: `POST /screenshot | /pdf | /content | /source | /markdown | /evaluate | /batch` (one action over up to `MAX_BATCH_URLS` urls, per-item results), `GET /health`, `GET /openapi.json`. `/content` returns the post-JS rendered DOM; `/source` returns the original response body ("view source"). Every POST body also accepts `waitUntil` (page-load strategy, default `load`).
 All other paths transparently proxy to the engine (landing page, `/json/*`, `/rbi/*`).
 
 **JS/TS client:** [`surfbird`](https://www.npmjs.com/package/surfbird) on npm — `new Surfbird(url,{token}).markdown(u)` etc., plus `sb.batch(action, urls)`.
@@ -87,11 +90,21 @@ Tools: `surf_markdown` `surf_content` `surf_source` `surf_screenshot` `surf_pdf`
 
 **B. `chrome-devtools-mcp` — full CDP surface.** Points straight at the proxied WebSocket (`/devtools/browser` passes through with Bearer auth) — more tools, more moving parts. See upstream docs; if your client can't send custom WS headers, run a `raw` image on a private network instead.
 
-**No MCP at all?** The REST layer is agent-friendly on its own — [`skills/surfbird/SKILL.md`](skills/surfbird/SKILL.md) is a drop-in skill that teaches any agent to drive it with `curl`.
+**No MCP at all?** The REST layer is agent-friendly on its own — [`skills/surfbird/SKILL.md`](https://github.com/terry2010/surfbird/blob/main/skills/surfbird/SKILL.md) is a drop-in skill that teaches any agent to drive it with `curl`.
+
+## Agent plugins
+
+Purpose-built plugins that drive a Surfbird (or upstream Kitesurf) endpoint over CDP "like a person" — 28 `surfbird_*` tools each: tab management, navigation, semantic snapshots with element refs, click/fill/type, waits, JS evaluation, screenshots/PDF, console & network inspection, and WebMCP. Every agent session owns an isolated browser.
+
+- **[dsh-control-surfbird-for-kitesurf](https://github.com/terry2010/dsh-control-surfbird-for-kitesurf)** — for [DSH](https://www.deepseek.com/) agents; settings UI, encrypted token file, install via `dsh plugin install dsh-control-surfbird-for-kitesurf`
+- **[opencode-control-surfbird-for-kitesurf](https://github.com/terry2010/opencode-control-surfbird-for-kitesurf)** — for [OpenCode](https://opencode.ai/) (desktop app + TUI, with a built-in settings page/dialog); install via `opencode plugin add opencode-control-surfbird-for-kitesurf`
+- **[pi-control-surfbird-for-kitesurf](https://github.com/terry2010/pi-control-surfbird-for-kitesurf)** — for the [Pi](https://pi.dev/) coding agent; settings via `/surfbird-settings`, install via `pi install pi-control-surfbird-for-kitesurf`
+
+All three share the same host-independent CDP core and work against the `auth` image (Bearer token) or `raw` image (loopback/private networks only).
 
 ## Examples
 
-[`examples/`](examples/) — zero-dep Python client (`rss_to_markdown.py` builds a feed→markdown digest for LLM daily reports) and bash/curl scripts.
+[`examples/`](https://github.com/terry2010/surfbird/tree/main/examples) — zero-dep Python client (`rss_to_markdown.py` builds a feed→markdown digest for LLM daily reports) and bash/curl scripts.
 
 ## Env
 
@@ -107,6 +120,7 @@ Tools: `surf_markdown` `surf_content` `surf_source` `surf_screenshot` `surf_pdf`
 | `SURFBIRD_INSPECTOR` | — | `1` opens the workerd debug inspector on :9229 (loopback, debugging only) |
 | `SURFBIRD_URL_ALLOWLIST` | — | comma-separated regexes — if set, only matching urls may be fetched |
 | `SURFBIRD_URL_BLOCKLIST` | — | comma-separated regexes — refuse matching urls (e.g. `169\.254\.\|,^http://localhost`) |
+| `ENGINE_HOST` / `ENGINE_PORT` | `127.0.0.1` / `8787` | engine endpoint the proxy dials (auth image — the in-container default needs no change) |
 | `ENGINE_READY_TIMEOUT_MS` | 120000 | startup wait for engine before proxy listens |
 | `SURFBIRD_MODE` | per target | `raw` / `auth` |
 

@@ -19,4 +19,5 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: terry2010/surfbird
-          short-description: "Unofficial self-hosted Kitesurf headless browser for AI agents: markdown, screenshots, PDF, CDP"
+          short-description: "Unofficial self-hosted Cloudflare Kitesurf headless browser for AI agents: markdown, PDF, CDP"
+          enable-url-completion: true

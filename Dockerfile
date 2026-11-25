@@ -73,6 +73,14 @@ RUN mkdir /out && tar -C /build --exclude='./.git' --exclude='./bazel-*' -cf - .
 
 # ---------- runtime base ----------
 FROM ${NODE_IMAGE} AS runtime-base
+# OCI metadata — Docker Hub has no source-repo field for community images;
+# these labels are how scanners/registries/LLM tooling find the repo.
+LABEL org.opencontainers.image.title="surfbird" \
+      org.opencontainers.image.description="Unofficial self-hosted Cloudflare Kitesurf headless browser for AI agents" \
+      org.opencontainers.image.url="https://hub.docker.com/r/terry2010/surfbird" \
+      org.opencontainers.image.source="https://github.com/terry2010/surfbird" \
+      org.opencontainers.image.documentation="https://github.com/terry2010/surfbird#readme" \
+      org.opencontainers.image.licenses="Apache-2.0"
 ENV NODE_ENV=production
 # node slim ships no system CA bundle — node bundles its own roots, but workerd
 # (KJ TLS) reads /etc/ssl/certs and can't fetch any HTTPS site without them.
