@@ -10,3 +10,4 @@
 {"date":"2026-11-23","npm":{"surfbird":{"daily":11,"weekly":80,"monthly":775,"total":775},"surfbird-mcp":{"daily":10,"weekly":101,"monthly":813,"total":813}},"docker":{"pulls":973,"stars":0}}
 {"date":"2026-11-24","npm":{"surfbird":{"daily":6,"weekly":67,"monthly":781,"total":781},"surfbird-mcp":{"daily":10,"weekly":88,"monthly":823,"total":823}},"docker":{"pulls":1055,"stars":0}}
 {"date":"2026-11-25","npm":{"surfbird":{"daily":3,"weekly":55,"monthly":784,"total":784},"surfbird-mcp":{"daily":12,"weekly":82,"monthly":835,"total":835}},"docker":{"pulls":1110,"stars":0}}
+{"date":"2026-11-26","npm":{"surfbird":{"daily":4,"weekly":51,"monthly":788,"total":788},"surfbird-mcp":{"daily":8,"weekly":80,"monthly":843,"total":843}},"docker":{"pulls":1149,"stars":0}}
