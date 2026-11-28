@@ -12,3 +12,4 @@
 {"date":"2026-11-25","npm":{"surfbird":{"daily":3,"weekly":55,"monthly":784,"total":784},"surfbird-mcp":{"daily":12,"weekly":82,"monthly":835,"total":835}},"docker":{"pulls":1110,"stars":0}}
 {"date":"2026-11-26","npm":{"surfbird":{"daily":4,"weekly":51,"monthly":788,"total":788},"surfbird-mcp":{"daily":8,"weekly":80,"monthly":843,"total":843}},"docker":{"pulls":1149,"stars":0}}
 {"date":"2026-11-27","npm":{"surfbird":{"daily":7,"weekly":52,"monthly":795,"total":795},"surfbird-mcp":{"daily":6,"weekly":77,"monthly":849,"total":849}},"docker":{"pulls":1284,"stars":0}}
+{"date":"2026-11-28","npm":{"surfbird":{"daily":19,"weekly":61,"monthly":814,"total":814},"surfbird-mcp":{"daily":27,"weekly":86,"monthly":876,"total":876}},"docker":{"pulls":1395,"stars":0}}
